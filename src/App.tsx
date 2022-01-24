@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Timer from './modules/Timer';
 
-class App extends React.Component {
+class App extends React.Component<{},{}> {
 
   constructor(props: any) {
     super(props);

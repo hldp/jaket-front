@@ -1,4 +1,6 @@
+import { Button } from "@mui/material";
 import React from "react";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // Props, state
 class Timer extends React.Component<{ defaultTimer: number }, {timer: number}> {
@@ -29,7 +31,7 @@ class Timer extends React.Component<{ defaultTimer: number }, {timer: number}> {
             <div>
                 {this.state.timer}
             </div>
-            <button onClick={this.reset}></button>
+            <Button variant="contained" endIcon={<DeleteIcon />}onClick={this.reset}>Reset</Button>
             </div>
         );
     }
