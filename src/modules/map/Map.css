@@ -1,0 +1,149 @@
+.map {
+    margin: 20px;
+    height: 600px;
+}
+
+/* Markers */
+.marker-circle {
+    position: absolute;
+    font-size: 40px;
+    line-height: 40px;
+    margin-left: -20px;
+    margin-top: -20px;
+}
+.marker-circle::before {
+    content: 'circle';
+    font-family: 'Material Icons';
+    color: #118282;
+    font-style: normal;
+}
+.company-step-1::before {
+    color: #DDDDDD;
+}
+.company-step-2::before {
+    color: #c1e1fe;
+}
+.company-step-3::before {
+    color: #3eff00;
+}
+.company-step-6::before {
+    color: #CCCCCC;
+}
+.marker-icon {
+    position: absolute;
+    line-height: 40px;
+    width: 40px;
+    height: 40px;
+    left: -14px;
+    top: -20px;
+    text-align: center;
+    font-size: 21px;
+}
+.marker-icon::before {
+    content: 'local_gas_station';
+    font-family: 'Material Icons';
+    color: white;
+    font-style: normal;
+}
+.marker-position {
+    position: absolute;
+    font-size: 24px;
+    line-height: 24px;
+    margin-left: -6px;
+    margin-top: -5px;
+}
+.marker-position::before {
+    content: 'circle';
+    font-family: 'Material Icons';
+    color: #4285f4;
+    font-style: normal;
+}
+.position-circle {
+    font-size: 24px;
+    line-height: 24px;
+    margin-left: -20px;
+    margin-top: -20px;
+}
+.infobulle {
+    background-color: white;
+    border-radius: 4px;
+}
+.marker-popup-item {
+    padding-left: 27px;
+}
+.marker-popup-item::before {
+    content: 'arrow_forward';
+    font-family: 'Material Icons';
+    color: #4e4f4b;
+    font-style: normal;
+    font-size: 20px;
+    margin-right: 7px;
+    position: absolute;
+    left: 20px;
+    top: 56px;
+}
+.address-icon::before {
+    content: 'maps_home_work';
+    font-family: 'Material Icons';
+}
+
+/* Marker Cluster */
+.cluster {
+    width: 30px!important;
+    height: 30px!important;
+    border-radius: 50%;
+    background: black;
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    background-image: none!important;
+    line-height: 30px;
+    left: -20px;
+    top: -20px;
+}
+.cluster .counter {
+    color: white;
+    left: -20px;
+    top: -20px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Map Legend */
+.legend {
+    padding: 6px 8px;
+    font: 14px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    line-height: 24px;
+    color: #555;
+}
+.legend h4 {
+    text-align: center;
+    font-size: 16px;
+    margin: 2px 12px 8px;
+    color: #777;
+}
+.legend span {
+    position: relative;
+    bottom: 3px;
+}
+.legend i {
+    width: 22px;
+    height: 22px;
+    float: left;
+    margin: -2px 8px 0px 0px;
+    opacity: 0.7;
+    border-radius: 20px;
+    position: relative;
+}
+.legend i::before {
+    content: '\F01D7';
+    font-family: 'Material Icons';
+    color: white;
+    font-style: normal;
+    position: absolute;
+    left: 4px;
+    bottom: -1px;
+}
