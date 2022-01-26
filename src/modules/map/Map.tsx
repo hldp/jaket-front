@@ -4,9 +4,10 @@ import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import { MarkerObject } from "../../models/marker-object.model";
 import { Station } from "../../models/station.model";
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 // Props, state
-class Map extends React.Component<{ stations: Array<Station> }, { markers: Array<MarkerObject>, circles: Array<L.Circle> }> {
+class Map extends React.Component<{ stations: Array<Station> }, { markers: Array<MarkerObject | Array<MarkerObject>>, circles: Array<L.Circle> }> {
 
     public map: L.Map | null;
 
@@ -32,6 +33,17 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
         this.props.stations.forEach((station: Station) => {
             this.addStationToMap(station);
         });
+        const {markers} = this.state
+        let station_markers: Array<MarkerObject> = [];
+        let other_markers: Array<MarkerObject | Array<MarkerObject>> = [];
+        markers.forEach((marker) => {
+            if (!Array.isArray(marker)) {
+                if (marker.isStation) station_markers.push(marker);
+                else other_markers.push(marker)
+            }
+        });
+        other_markers.push(station_markers)
+        this.setState({markers: other_markers})
     }
 
     /**
@@ -47,6 +59,7 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
         popupHtml += '</div>';
 
         this.addMarker({
+            id: station.id,
             position: L.latLng(station.latitude, station.longitude),
             icon: markerIcon,
             popup: {
@@ -54,28 +67,13 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
                 autoPan : true, 
                 minWidth: 320,
                 maxWidth : 320, 
-                maxHeight : 320
-            }
+                maxHeight : 320,
+            },
+            isStation: true
         });
 
-        // marker.off('click');
-        // marker.counter = 1;
-        // marker.namespaces = [];
-        // marker.need_popup_update = false;
-
-
-        // // Add to cluster
-        // if (self.cluster_enable) {
-        //     self.markerCluster.addLayer(marker);
-        // }
-        // else marker.addTo(self.map);
-
-        // // update bounds
-        // self.bounds.extend(marker.getLatLng());
-
+        //auto center marker on click
         // marker.on('click', function() {
-        //     //auto center marker on click
-        //     if (self.center_on_click) {
         //         var map_height = $('.inner-map').height();
         //         var popup_height = 320;
         //         if(map_height >= popup_height) {
@@ -85,15 +83,6 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
         //             self.map.panTo(marker_adjusted);
         //         }
         //         else self.map.panTo(marker.getLatLng());
-        //     }
-
-        //     // check if popup is enable
-        //     if (marker.infobubble_enable !== undefined) {
-        //         if (marker.infobubble_enable === false) return;
-        //     }
-        //     else if (self.infobubble_enable !== undefined) {
-        //         if (self.infobubble_enable === false) return;
-        //     }
 
         //     marker.openPopup();
         // });
@@ -134,6 +123,7 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
                 let longitude = position.coords.longitude;
 
                 this.addMarker({
+                    id: 0,
                     position: L.latLng(latitude, longitude),
                     icon: L.divIcon({className: 'marker', html: '<i class="marker-position"></i>'})
                 });
@@ -144,17 +134,52 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
 
                 if (panToUserPosition && this.map) {
                     this.map.flyTo([latitude, longitude], 17, {
-                        animate: true, 
+                        animate: false, 
                     });
                 }
             }, () => {
                 if (this.map) {
                     this.map.flyTo([43.552550, 7.022886], this.map.getZoom(), {
-                        animate: true,
+                        animate: false,
                     });
                 }
             });
         }
+    }
+
+    /**
+     * Render the markers on the map
+     * @returns 
+     */
+    public renderMarkers() {
+        let markers: JSX.Element[] = [];
+
+        let getMarker = (marker: MarkerObject, idx: string) => {
+            return <Marker key={`marker-${idx}`} position={marker.position} icon={marker.icon}>
+                {
+                    (marker.popup) ?
+                    <Popup autoPan={marker.popup.autoPan} minWidth={marker.popup.minWidth} maxWidth={marker.popup.maxWidth} maxHeight={marker.popup.maxHeight}>
+                        <div dangerouslySetInnerHTML={{__html: marker.popup.content}} />
+                    </Popup> 
+                    : ''
+                }
+            </Marker>
+        }
+
+        this.state.markers.forEach((marker: MarkerObject | Array<MarkerObject>, idx) => {
+            if (Array.isArray(marker)) {
+                let cluster_markers: JSX.Element[] = [];
+                marker.forEach((cluster_marker: MarkerObject, id) => {
+                    cluster_markers.push(getMarker(cluster_marker, idx+'_'+id));
+                });
+                markers.push(<MarkerClusterGroup>
+                    {cluster_markers}
+                </MarkerClusterGroup>)
+            } else {
+                markers.push(getMarker(marker, ''+idx));
+            }
+        });
+        return markers;
     }
     
     /**
@@ -164,24 +189,14 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
     render(): React.ReactNode {
         return(
             <div className="map-container">
-                <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={true} className="map" trackResize={false} doubleClickZoom={true} zoomControl={true} whenCreated={(map) => { this.map = map }}>
+                <MapContainer center={[46.227638, 2.213749]} zoom={6} scrollWheelZoom={true} className="map" trackResize={false} doubleClickZoom={true} zoomControl={true} whenCreated={(map) => { this.map = map }}>
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png?lang=FR"
                     />
 
-                    {this.state.markers.map((marker: MarkerObject, idx) => 
-                        <Marker key={`marker-${idx}`} position={marker.position} icon={marker.icon}>
-                            {
-                                (marker.popup) ?
-                                <Popup autoPan={marker.popup.autoPan} minWidth={marker.popup.minWidth} maxWidth={marker.popup.maxWidth} maxHeight={marker.popup.maxHeight}>
-                                    <div dangerouslySetInnerHTML={{__html: marker.popup.content}} />
-                                </Popup> 
-                                : ''
-                            }
+                    {this.renderMarkers()}
 
-                        </Marker>
-                    )}
                     {this.state.circles.map((circle: L.Circle, idx) => 
                         <Circle key={`circle-${idx}`} center={circle.getLatLng()} radius={circle.getRadius()} weight={1} className="position-circle"/>
                     )}

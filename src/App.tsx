@@ -5,6 +5,8 @@ import Map from './modules/map/Map';
 import { Station } from './models/station.model';
 import stations from './mock-data/stations';
 
+require('react-leaflet-markercluster/dist/styles.min.css');
+
 class App extends React.Component<{},{}> {
 
   private stations: Array<Station> = stations;
