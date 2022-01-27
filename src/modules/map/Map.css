@@ -147,3 +147,21 @@
     left: 4px;
     bottom: -1px;
 }
+
+/* Popup */
+.opened-text, .closed-text {
+    font-weight: 600;
+}
+.opened-text {
+    color: #38b10f;
+}
+.closed-text {
+    color: crimson;
+}
+.gas-name {
+    font-weight: 500;
+}
+.gas-img {
+    width: 20px;
+    height: 20px;
+}

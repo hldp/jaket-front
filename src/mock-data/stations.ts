@@ -10,10 +10,78 @@ let stations: Array<Station> = [{
         id: 1,
         day: 'monday',
         open: true,
-        opening: new Date(),
-        closing: new Date()
+        opening: new Date(Date.parse('01 Jan 1970 09:00:00 GMT')),
+        closing: new Date(Date.parse('01 Jan 1970 18:00:00 GMT'))
+    },
+    {
+        id: 2,
+        day: 'tuesday',
+        open: true,
+        opening: new Date(Date.parse('01 Jan 1970 09:00:00 GMT')),
+        closing: new Date(Date.parse('01 Jan 1970 18:00:00 GMT'))
+    },
+    {
+        id: 3,
+        day: 'wednesday',
+        open: true,
+        opening: new Date(Date.parse('01 Jan 1970 09:00:00 GMT')),
+        closing: new Date(Date.parse('01 Jan 1970 18:00:00 GMT'))
+    },
+    {
+        id: 4,
+        day: 'thursday',
+        open: true,
+        opening: new Date(Date.parse('01 Jan 1970 09:00:00 GMT')),
+        closing: new Date(Date.parse('01 Jan 1970 18:00:00 GMT'))
+    },
+    {
+        id: 5,
+        day: 'friday',
+        open: true,
+        opening: new Date(Date.parse('01 Jan 1970 09:00:00 GMT')),
+        closing: new Date(Date.parse('01 Jan 1970 18:00:00 GMT'))
+    },
+    {
+        id: 6,
+        day: 'saturday',
+        open: true,
+        opening: new Date(Date.parse('01 Jan 1970 09:00:00 GMT')),
+        closing: new Date(Date.parse('01 Jan 1970 18:00:00 GMT'))
+    },
+    {
+        id: 7,
+        day: 'sunday',
+        open: true,
+        opening: new Date(Date.parse('01 Jan 1970 09:00:00 GMT')),
+        closing: new Date(Date.parse('01 Jan 1970 18:00:00 GMT'))
     }],
     prices: [{
+        gas_id: 1,
+        gas_name: 'Gazole',
+        last_update: new Date(),
+        price: 1.999
+    },
+    {
+        gas_id: 1,
+        gas_name: 'SP95',
+        last_update: new Date(),
+        price: 1.999
+    },{
+        gas_id: 1,
+        gas_name: 'SP95-E10',
+        last_update: new Date(),
+        price: 1.999
+    },{
+        gas_id: 1,
+        gas_name: 'GPLc',
+        last_update: new Date(),
+        price: 1.999
+    },{
+        gas_id: 1,
+        gas_name: ' E85',
+        last_update: new Date(),
+        price: 1.999
+    },{
         gas_id: 1,
         gas_name: 'SP98',
         last_update: new Date(),
