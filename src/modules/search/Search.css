@@ -1,0 +1,9 @@
+.autocomplete {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+.chip {
+    margin-top: 10px;
+}

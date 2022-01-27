@@ -4,6 +4,8 @@ import './App.css';
 import Map from './modules/map/Map';
 import { Station } from './models/station.model';
 import stations from './mock-data/stations';
+import Search from './modules/search/Search';
+
 
 require('react-leaflet-markercluster/dist/styles.min.css');
 
@@ -18,6 +20,7 @@ class App extends React.Component<{},{}> {
   render() {
     return (
       <div className="App">
+        <Search></Search>
         <Map stations={this.stations}></Map>
       </div>
     );
