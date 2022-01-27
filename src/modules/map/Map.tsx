@@ -37,18 +37,6 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
             cluster.push(this.getStationMarker(station));
         });
         this.addCluster(cluster);
-
-        // const {markers} = this.state
-        // let station_markers: Array<MarkerObject> = [];
-        // let other_markers: Array<MarkerObject | Array<MarkerObject>> = [];
-        // markers.forEach((marker) => {
-        //     if (!Array.isArray(marker)) {
-        //         if (marker.isStation) station_markers.push(marker);
-        //         else other_markers.push(marker)
-        //     }
-        // });
-        // other_markers.push(station_markers)
-        // this.setState({markers: other_markers})
     }
 
     /**
@@ -58,7 +46,7 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
     private getCurrentDateSchedule(schedules: Schedule[]): Schedule | undefined {
         let date = new Date();
         let dateDay = date.getDay();
-        if (dateDay == 0) dateDay = 7;
+        if (dateDay === 0) dateDay = 7;
         let daySchedule: Schedule | undefined;
         schedules.forEach((schedule: Schedule) => {
             if (schedule.id === dateDay) daySchedule = schedule;
@@ -113,7 +101,7 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
                 let is_opened = this.isStationOpened(daySchedule)
                 popupHtml += '<p>'+
                 '<span class="'+(is_opened?'opened-text':'closed-text')+'">'+
-                (is_opened?'Open':'Close')+'</span>'+' • '+
+                (is_opened?'Open':'Close')+'</span> • '+
                 (is_opened?'Closing at':'Opening at')+' '+this.formatDate(is_opened?daySchedule.closing:daySchedule.opening)
                 +'</p>';
             }
@@ -136,21 +124,6 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
                 maxHeight : 320,
             }, true
         );
-
-        //auto center marker on click
-        // marker.on('click', function() {
-        //         var map_height = $('.inner-map').height();
-        //         var popup_height = 320;
-        //         if(map_height >= popup_height) {
-        //             var marker_lat_lng = map.project(marker.getLatLng());
-        //             marker_lat_lng.y -= popup_height / 2;
-        //             var marker_adjusted = map.unproject(marker_lat_lng);
-        //             self.map.panTo(marker_adjusted);
-        //         }
-        //         else self.map.panTo(marker.getLatLng());
-
-        //     marker.openPopup();
-        // });
     }
 
     /**
@@ -229,7 +202,23 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
      * @returns 
      */
     private getMarker(marker: MarkerObject, id: string) {
-        return <Marker key={`marker-${id}`} position={marker.position} icon={marker.icon}>
+        return <Marker key={`marker-${id}`} position={marker.position} icon={marker.icon} eventHandlers={{
+            click: (e) => {
+                //auto center marker on click
+                let map_height = 600;
+                let popup_height = 320;
+                if(map_height >= popup_height) {
+                    let marker_lat_lng = this.map?.project(e.target.getLatLng());
+                    if (marker_lat_lng) {
+                        marker_lat_lng.y -= popup_height / 2;
+                        let marker_adjusted = this.map?.unproject(marker_lat_lng);
+                        if (marker_adjusted) this.map?.panTo([marker_adjusted?.lat, marker_adjusted?.lng]);
+                    }
+                }
+                else this.map?.flyTo(e.target.getLatLng(), 17, {animate: false});
+                e.target.openPopup();
+            },
+          }}>
             {
                 (marker.popup) ?
                 <Popup autoPan={marker.popup.autoPan} minWidth={marker.popup.minWidth} maxWidth={marker.popup.maxWidth} maxHeight={marker.popup.maxHeight}>
