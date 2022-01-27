@@ -1,4 +1,5 @@
 import { MarkerPopup } from "./marker-popup.model";
+import L from "leaflet";
 
 export class MarkerObject {
     public id: number;
