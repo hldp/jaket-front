@@ -62,27 +62,27 @@ let stations: Array<Station> = [{
         price: 1.999
     },
     {
-        gas_id: 1,
+        gas_id: 2,
         gas_name: 'SP95',
         last_update: new Date(),
         price: 1.999
     },{
-        gas_id: 1,
+        gas_id: 3,
         gas_name: 'SP95-E10',
         last_update: new Date(),
         price: 1.999
     },{
-        gas_id: 1,
+        gas_id: 4,
         gas_name: 'GPLc',
         last_update: new Date(),
         price: 1.999
     },{
-        gas_id: 1,
+        gas_id: 5,
         gas_name: ' E85',
         last_update: new Date(),
         price: 1.999
     },{
-        gas_id: 1,
+        gas_id: 6,
         gas_name: 'SP98',
         last_update: new Date(),
         price: 1.999
