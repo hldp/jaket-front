@@ -1,25 +1,31 @@
 
-import { Autocomplete, Chip, CircularProgress, Slider, TextField } from "@mui/material";
+import { Autocomplete, Chip, CircularProgress, Stack, TextField } from "@mui/material";
 import React from "react";
 import { Adress } from "../../models/adress.model";
 import AdressesApi from "../services/adressesAPI.service";
+import { ChipData } from "./chipData.model";
 import './Search.css'
 
 
-class Search extends React.Component<{}, {adresses: Adress[]}>{
+class Search extends React.Component<{}, {adresses: Adress[], chipData:ChipData[]}>{
 
     private adressesApi: AdressesApi = new AdressesApi();
     private searchTerms: String = "";
     private loading: boolean = false;
-    private cityFound : Adress[] = [];
-
 
     constructor(props : any){
         super(props);
-        this.state = {adresses: []};
+        this.state = {adresses: [], chipData:[
+            { key: 0, label: 'SP95', color: 'primary' },
+            { key: 1, label: 'SP98', color: 'primary' },
+            { key: 2, label: 'Diesel', color: 'primary' },
+            { key: 3, label: 'GPL', color: 'primary' },
+            { key: 4, label: 'Ethanol', color: 'primary' },
+        ]};
+
         this.selectCity = this.selectCity.bind(this);
         this.onChange = this.onChange.bind(this);
-        this.gazSelected = this.gazSelected.bind(this);
+        this.onSelectGaz = this.onSelectGaz.bind(this);
     }
 
     selectCity(e:any, newValue: any){
@@ -49,20 +55,35 @@ class Search extends React.Component<{}, {adresses: Adress[]}>{
 
     }
 
-    gazSelected(e:any){
+    onSelectGaz(data: any){
         // Todo : filtrer les recherches par les carburant choisis
-        console.log(e.target.textContent)
+        
+        
+
+        this.state.chipData.forEach(chip => {
+            if(chip.key === data.key){
+                if(chip.color==="default"){
+                    chip.color = "primary";
+                }else{
+                    chip.color = "default";
+                }
+            }
+        });
+
+        this.setState({chipData : this.state.chipData})
+
+        //console.log(data)
 
     }
 
     render(): React.ReactNode {
         return (
-            <div className="autocomplete" >
+            <div className="searchComponent" >
                 <Autocomplete
                 options={this.state.adresses}
                 onChange={this.selectCity}
 
-                sx={{ width: 300 }}
+                sx={{ width: 320 }}
                 renderInput={(params) => 
                 <TextField onChange={this.onChange} {...params} label="Adresse" 
                 InputProps={{
@@ -75,12 +96,14 @@ class Search extends React.Component<{}, {adresses: Adress[]}>{
                     ),
                   }}/>}
             />
-                <div className="chip">
-                    <Chip label="SP95" variant="outlined" color="primary" onClick={this.gazSelected} />
-                    <Chip label="SP98" variant="outlined" onClick={this.gazSelected} />
-                    <Chip label="Diesel" variant="outlined" onClick={this.gazSelected} />
-                    <Chip label="GPL" variant="outlined" onClick={this.gazSelected} />
-                    <Chip label="Ethanol" variant="outlined" onClick={this.gazSelected} />
+                <div className="chipDiv">
+                    <Stack direction="row" spacing={1}>
+                    {this.state.chipData.map((data) => {
+                        return (
+                            <Chip className="chip" label={data.label} color={data.color} onClick={() => this.onSelectGaz(data)}/>
+                        );
+                    })}
+                    </Stack>
                 </div>
             </div>
         );
