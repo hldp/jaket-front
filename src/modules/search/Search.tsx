@@ -2,12 +2,16 @@
 import { Autocomplete, Chip, CircularProgress, Stack, TextField } from "@mui/material";
 import React from "react";
 import { Adress } from "../../models/adress.model";
+import { Station } from "../../models/station.model";
 import AdressesApi from "../services/adressesAPI.service";
 import { ChipData } from "./chipData.model";
+import stations from '../../mock-data/stations';
 import './Search.css'
 
 
-class Search extends React.Component<{}, {adresses: Adress[], chipData:ChipData[]}>{
+class Search extends React.Component<{
+    updateStations: (stations: Station[]) => void;
+}, {adresses: Adress[], chipData:ChipData[]}>{
 
     private adressesApi: AdressesApi = new AdressesApi();
     private searchTerms: String = "";
@@ -23,12 +27,16 @@ class Search extends React.Component<{}, {adresses: Adress[], chipData:ChipData[
             { key: 4, label: 'Ethanol', color: 'primary' },
         ]};
 
-        this.selectCity = this.selectCity.bind(this);
+        this.onSelectCity = this.onSelectCity.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onSelectGaz = this.onSelectGaz.bind(this);
     }
 
-    selectCity(e:any, newValue: any){
+    componentDidMount() {
+        this.props.updateStations(stations);
+    }
+
+    onSelectCity(e:any, newValue: any){
         
         // TODO : recentrer la carte sur la ville
         console.log(e.target);
@@ -81,7 +89,7 @@ class Search extends React.Component<{}, {adresses: Adress[], chipData:ChipData[
             <div className="searchComponent" >
                 <Autocomplete
                 options={this.state.adresses}
-                onChange={this.selectCity}
+                onChange={this.onSelectCity}
 
                 sx={{ width: 320 }}
                 renderInput={(params) => 
@@ -98,9 +106,9 @@ class Search extends React.Component<{}, {adresses: Adress[], chipData:ChipData[
             />
                 <div className="chipDiv">
                     <Stack direction="row" spacing={1}>
-                    {this.state.chipData.map((data) => {
+                    {this.state.chipData.map((data, index) => {
                         return (
-                            <Chip className="chip" label={data.label} color={data.color} onClick={() => this.onSelectGaz(data)}/>
+                            <Chip key={'chip_'+index} className="chip" label={data.label} color={data.color} onClick={() => this.onSelectGaz(data)}/>
                         );
                     })}
                     </Stack>

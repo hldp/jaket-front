@@ -32,6 +32,12 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
         this.displayStations();
     }
 
+    componentDidUpdate(previousProps: { stations: Station[]; }, previousState: any){
+        if (previousProps.stations !== this.props.stations) {
+            this.displayStations();
+        }
+    }
+
     /**
      * Display all stations received on the map
      */
@@ -176,7 +182,7 @@ class Map extends React.Component<{ stations: Array<Station> }, { markers: Array
         });
         return clusters;
     }
-    
+
     /**
      * Render the component
      * @returns 
