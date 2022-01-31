@@ -18,7 +18,7 @@ class MapService {
         if (station.schedules) {
             let daySchedule = this.getCurrentDateSchedule(station.schedules);
             if (daySchedule) {
-                let is_opened = this.isStationOpened(daySchedule)
+                let is_opened = this.isStationOpened(station)
                 popupHtml += '<p>'+
                 '<span class="'+(is_opened?'opened-text':'closed-text')+'">'+
                 (is_opened?'Open':'Close')+'</span> • '+
@@ -66,7 +66,8 @@ class MapService {
      * @param schedules 
      * @returns 
      */
-    private isStationOpened(daySchedule: Schedule | undefined): boolean {
+    public isStationOpened(station: Station): boolean {
+        let daySchedule = this.getCurrentDateSchedule(station.schedules);
         let date = new Date(Date.now());
         if (daySchedule) {
             const start = daySchedule.opening.getHours() * 60 + daySchedule.opening.getMinutes();
