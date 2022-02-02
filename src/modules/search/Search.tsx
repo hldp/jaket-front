@@ -93,7 +93,7 @@ class Search extends React.Component<{
 
                 sx={{ width: 320 }}
                 renderInput={(params) => 
-                <TextField onChange={this.onChange} {...params} label="Adresse" 
+                <TextField onChange={this.onChange} {...params} label="Adresse" sx={{ background: 'white'}}
                 InputProps={{
                     ...params.InputProps,
                     endAdornment: (
@@ -108,7 +108,10 @@ class Search extends React.Component<{
                     <Stack direction="row" spacing={1}>
                     {this.state.chipData.map((data, index) => {
                         return (
-                            <Chip key={'chip_'+index} className="chip" label={data.label} color={data.color} onClick={() => this.onSelectGaz(data)}/>
+                            <Chip key={'chip_'+index} className="chip" label={data.label} color={data.color} 
+                                onClick={() => this.onSelectGaz(data)}
+                                sx={{ background: '#fecc00', color: 'black' }}
+                                />
                         );
                     })}
                     </Stack>
