@@ -1,5 +1,5 @@
 
-import { Autocomplete, Chip, CircularProgress, Stack, TextField } from "@mui/material";
+import { Autocomplete, Box, Chip, CircularProgress, Grid, Stack, TextField } from "@mui/material";
 import React from "react";
 import { Adress } from "../../models/adress.model";
 import { Station } from "../../models/station.model";
@@ -86,26 +86,28 @@ class Search extends React.Component<{
 
     render(): React.ReactNode {
         return (
-            <div className="searchComponent" >
-                <Autocomplete
-                options={this.state.adresses}
-                onChange={this.onSelectCity}
+            <Grid container spacing={2}>
+                <Grid item xs={1} sm={3}></Grid>
+                <Grid item xs={10} sm={6} alignItems="center" style={{ height: "100%" }}>
+                    <Grid style={{ height: "100%" }}>
+                    <Autocomplete
+                        options={this.state.adresses}
+                        onChange={this.onSelectCity}
 
-                sx={{ width: 320 }}
-                renderInput={(params) => 
-                <TextField onChange={this.onChange} {...params} label="Adresse" sx={{ background: 'white'}}
-                InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <React.Fragment>
-                        {this.loading ? <CircularProgress color="inherit" size={20} /> : null}
-                        {params.InputProps.endAdornment}
-                      </React.Fragment>
-                    ),
-                  }}/>}
-            />
-                <div className="chipDiv">
-                    <Stack direction="row" spacing={1}>
+                        sx={{ width: '100%' }}
+                        renderInput={(params) => 
+                        <TextField onChange={this.onChange} {...params} label="Adresse" sx={{ background: 'white'}}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                            <React.Fragment>
+                                {this.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                {params.InputProps.endAdornment}
+                            </React.Fragment>
+                            ),
+                        }}/>}
+                    />
+                    <Stack direction="row" spacing={1} sx={{ marginTop: '10px'}} justifyContent="center">
                     {this.state.chipData.map((data, index) => {
                         return (
                             <Chip key={'chip_'+index} className="chip" label={data.label} color={data.color} 
@@ -115,8 +117,10 @@ class Search extends React.Component<{
                         );
                     })}
                     </Stack>
-                </div>
-            </div>
+                    </Grid>
+                </Grid>
+                <Grid item xs={1} sm={3}></Grid>
+            </Grid>
         );
     }
 
