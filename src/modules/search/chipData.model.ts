@@ -1,6 +1,8 @@
+import { GazType } from "../../models/gazType.enum";
+
 export interface ChipData {
     key: number;
-    label: string;
+    label: GazType;
     color: any;
   }
   
