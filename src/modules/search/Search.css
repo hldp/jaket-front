@@ -11,3 +11,9 @@
 .chip{
     margin-right: 5px;
 }
+.gps-icon {
+    margin-right: -52px !important;
+    position: absolute !important;
+    right: 0;
+    top: 4%;
+}

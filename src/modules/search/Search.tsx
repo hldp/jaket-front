@@ -1,5 +1,5 @@
 
-import { Autocomplete, Chip, CircularProgress, Grid, Slider, Stack, TextField } from "@mui/material";
+import { Autocomplete, Chip, CircularProgress, Grid, IconButton, Slider, Stack, TextField } from "@mui/material";
 import React from "react";
 import { Adress } from "../../models/adress.model";
 import { Station } from "../../models/station.model";
@@ -8,14 +8,17 @@ import { ChipData } from "./chipData.model";
 import stations from '../../mock-data/stations';
 import './Search.css'
 import { GazType } from "../../models/gazType.enum";
-
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 
 class Search extends React.Component<{
     updateStations: (stations: Station[]) => void;
     updateRadius: (radius: number)=> void;
     updateSelectedGaz: (selectedGaz: GazType[]) => void;
     updateCity: (city: Adress) => void;
+    centerOnPositionTriggered: () => void
 }, {adresses: Adress[], chipData:ChipData[]}>{
+
+    public defaultRadiusValue = 10;
 
     private adressesApi: AdressesApi = new AdressesApi();
     private searchTerms: String = "";
@@ -32,10 +35,12 @@ class Search extends React.Component<{
             { key: 4, label: GazType.ETHANOL, color: 'primary' },
         ]};
 
+        this.props.updateRadius(this.defaultRadiusValue)
         this.onSelectCity = this.onSelectCity.bind(this);
         this.onUserCityInput = this.onUserCityInput.bind(this);
         this.onSelectGaz = this.onSelectGaz.bind(this);
         this.onRadiusChange = this.onRadiusChange.bind(this);
+        this.handleGpsClick = this.handleGpsClick.bind(this);
     }
 
     componentDidMount() {
@@ -110,6 +115,13 @@ class Search extends React.Component<{
     }
 
     /**
+     * Method trigger when user click on GPS button
+     */
+    public handleGpsClick() {
+        this.props.centerOnPositionTriggered();
+    }
+
+    /**
      * The component render method
      * @returns 
      */
@@ -118,27 +130,30 @@ class Search extends React.Component<{
             <Grid container spacing={2}>
                 <Grid item xs={1} sm={3}></Grid>
                 <Grid item xs={10} sm={6} alignItems="center" style={{ height: "100%" }}>
-                    <Grid style={{ height: "100%" }}>
-                    <Autocomplete
-                        options={this.state.adresses}
-                        onChange={this.onSelectCity}
+                    <Stack direction="row" sx={{ position: 'relative' }}>
+                        <Autocomplete
+                            options={this.state.adresses}
+                            onChange={this.onSelectCity}
 
-                        sx={{ width: '100%' }}
-                        renderInput={(params) => 
-                        <TextField onChange={this.onUserCityInput} {...params} label="Adresse" sx={{ background: 'white'}}
-                        InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                            <React.Fragment>
-                                {this.loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                {params.InputProps.endAdornment}
-                            </React.Fragment>
-                            ),
-                        }}/>}
-                    />
-                    <Slider defaultValue={10} aria-label="Rayon" valueLabelDisplay="auto" onChange={this.onRadiusChange}
-                    color="secondary"
-                    />
+                            sx={{ width: '100%' }}
+                            renderInput={(params) => 
+                            <TextField onChange={this.onUserCityInput} {...params} label="Adresse" sx={{ background: 'white'}}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                <React.Fragment>
+                                    {this.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                                ),
+                            }}/>}
+                        />
+                        <IconButton color="secondary" className="gps-icon" onClick={this.handleGpsClick}>
+                            <GpsFixedIcon fontSize="large"/>
+                        </IconButton>
+                    </Stack>
+                    <Slider defaultValue={this.defaultRadiusValue} aria-label="Rayon" valueLabelDisplay="auto" onChange={this.onRadiusChange}
+                    color="secondary"/>
                     <Stack direction="row" spacing={1} sx={{ marginTop: '10px'}} justifyContent="center">
                     {this.state.chipData.map((data, index) => {
                         return (
@@ -148,7 +163,6 @@ class Search extends React.Component<{
                         );
                     })}
                     </Stack>
-                    </Grid>
                 </Grid>
                 <Grid item xs={1} sm={3}></Grid>
             </Grid>

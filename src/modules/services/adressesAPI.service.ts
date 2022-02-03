@@ -18,7 +18,7 @@ import { Adress } from "../../models/adress.model";
                 const result = response.data.features;
                 let adresses : Adress[] = [];
                 result.forEach((adress:any) => {
-                    const temp = new Adress(adress.geometry.coordinates[0], adress.geometry.coordinates[1], adress.properties.label);
+                    const temp = new Adress(adress.geometry.coordinates[1], adress.geometry.coordinates[0], adress.properties.label);
                     adresses.push(temp);
                 });
                 resolve(adresses);

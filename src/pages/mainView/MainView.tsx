@@ -9,7 +9,13 @@ import { GazType } from '../../models/gazType.enum';
 import { Adress } from '../../models/adress.model';
 import List from '../../modules/list/List';
 
-class MainView extends React.Component<{},{ stations: Station[], radius: number, gazSelected: GazType[], citySelected: Adress, displayedElement: string }> {
+class MainView extends React.Component<{},{ 
+  stations: Station[], 
+  radius: number, 
+  gazSelected: GazType[], 
+  citySelected: Adress, 
+  displayedElement: string,
+  centerMapOn: Adress | null }> {
 
   constructor(props: any) {
     super(props);
@@ -18,7 +24,8 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
         radius: 10,
         gazSelected: [],
         citySelected: new Adress(0,0,"noCity"),
-        displayedElement: 'map'
+        displayedElement: 'map',
+        centerMapOn: null
     }
     this.updateStations = this.updateStations.bind(this);        
     this.updateRadius = this.updateRadius.bind(this);
@@ -26,6 +33,7 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
     this.updateCity = this.updateCity.bind(this);
     this.buttonGroupMapClick = this.buttonGroupMapClick.bind(this);
     this.buttonGroupListClick = this.buttonGroupListClick.bind(this);
+    this.centerOnPositionTriggered = this.centerOnPositionTriggered.bind(this);
   }
 
   public updateStations(stations: Station[]): void {
@@ -42,6 +50,7 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
 
   public updateCity(citySelected:Adress): void{
     this.setState({citySelected});
+    this.setState({ centerMapOn: citySelected });
   }
 
   public buttonGroupMapClick() {
@@ -52,6 +61,17 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
     this.setState({ displayedElement: 'list' })
   }
 
+  /**
+   * Center the map on the user geolocation
+   */
+  public centerOnPositionTriggered() {
+    this.setState({ centerMapOn: {
+      latitude: 0,
+      longitude: 0,
+      label: 'position'
+    }});
+  }
+
   render() {
     return (
       <Box component={Grid} container spacing={2}>
@@ -59,7 +79,9 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
           <AppBarCustom></AppBarCustom>
         </Box>
         <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-container'>
-          <Search updateStations={this.updateStations} updateRadius={this.updateRadius} updateSelectedGaz={this.updateSelectedGaz} updateCity={this.updateCity}></Search>
+          <Search updateStations={this.updateStations} updateRadius={this.updateRadius} 
+                  updateSelectedGaz={this.updateSelectedGaz} updateCity={this.updateCity}
+                  centerOnPositionTriggered={this.centerOnPositionTriggered}></Search>
         </Box>
         <Box component={Grid} item xs={12} className='map-list-container'>
           <ButtonGroup variant="contained" className='button-group' aria-label="outlined primary button group">
@@ -68,7 +90,7 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
           </ButtonGroup>
           {
             (this.state.displayedElement === 'map')?
-            <Map stations={this.state.stations}></Map>:
+            <Map stations={this.state.stations} centerOn={this.state.centerMapOn} radius={this.state.radius}></Map>:
             <List stations={this.state.stations}></List> 
           }
         </Box>
