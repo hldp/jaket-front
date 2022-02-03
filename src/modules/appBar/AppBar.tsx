@@ -2,48 +2,32 @@ import { AccountCircle } from "@mui/icons-material";
 import { Box, Toolbar, IconButton, Typography, AppBar } from "@mui/material";
 import React from "react";
 
-class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement, mobileMoreAnchorEl: null | HTMLElement }>{
-
-    public menuId = 'primary-search-account-menu'
-    public mobileMenuId = 'primary-search-account-menu-mobile';
-    public isMenuOpen;
-    public isMobileMenuOpen;
+class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement }>{
 
     constructor(props : any){
         super(props);
 
-        this.state = {
-            anchorEl: null,
-            mobileMoreAnchorEl: null
-        }
-        
-        this.isMenuOpen = Boolean(this.state.anchorEl);
-        this.isMobileMenuOpen = Boolean(this.state.mobileMoreAnchorEl);
-
-        this.handleMobileMenuOpen = this.handleMobileMenuOpen.bind(this);
+        // Bind functions
         this.handleProfileMenuOpen = this.handleProfileMenuOpen.bind(this);
-        this.handleMobileMenuClose = this.handleMobileMenuClose.bind(this);
-        this.handleMenuClose = this.handleMenuClose.bind(this);
+
+        // Init state
+        this.state = {
+            anchorEl: null
+        }
     }
-  
-  
+
+    /**
+     * Called on profile btn click
+     * @param event 
+     */
     public handleProfileMenuOpen(event: React.MouseEvent<HTMLElement>) {
         this.setState({ anchorEl: event.currentTarget });
     };
   
-    public handleMobileMenuClose() {
-      this.setState({ mobileMoreAnchorEl: null });
-    };
-  
-    public handleMenuClose() {
-      this.setState({ anchorEl: null });
-      this.handleMobileMenuClose();
-    };
-  
-    public handleMobileMenuOpen(event: React.MouseEvent<HTMLElement>) {
-      this.setState({ mobileMoreAnchorEl: event.currentTarget });
-    };
-  
+    /**
+     * Render the component
+     * @returns 
+     */
     render(): React.ReactNode {
         return (
         <Box sx={{ flexGrow: 1 }}>
@@ -58,7 +42,7 @@ class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement, m
                             size="large"
                             edge="end"
                             aria-label="account of current user"
-                            aria-controls={this.menuId}
+                            aria-controls='primary-search-account-menu'
                             aria-haspopup="true"
                             onClick={this.handleProfileMenuOpen}
                             color="inherit"
