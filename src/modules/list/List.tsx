@@ -1,37 +1,44 @@
 import React, { Fragment } from "react";
 import './List.css';
 import { Station } from "../../models/station.model";
-import { TableContainer, Paper, Table, TableRow, TableCell, TableBody, Box, TablePagination } from "@mui/material";
-import EnhancedTableHead from "./EnhancedTableHead";
+import { TableContainer, Paper, Table, TableRow, TableCell, TableBody, TablePagination } from "@mui/material";
+import EnhancedTableHead, { Data, Order } from "./EnhancedTableHead";
 import MapService from "../map/Map.service";
-import { ClassNames } from "@emotion/react";
-
-interface Data {
-    name: string;
-    address: string;
-    gas_1: number; //gazole
-    gas_2: number; // sp95
-    gas_3: number; // e85
-    gas_4: number; // gpLc
-    gas_5: number; // sp95_e10
-    gas_6: number; // sp98
-    open: boolean;
-}
-
-type Order = 'asc' | 'desc';
+import { ListService } from "./List.service";
 
 // Props, state
 class List extends React.Component<{ stations: Array<Station> }, { rows: any, order: Order, orderBy: keyof Data, page: number, rowsPerPage: number }> {
 
     private mapService: MapService;
+    private listService: ListService;
 
     constructor(props: any) {
         super(props);
 
+        // Init attributes
         this.mapService = new MapService();
+        this.listService = new ListService();
+
+        // Bind functions
         this.handleRequestSort = this.handleRequestSort.bind(this);
 
+        // Init state
+        this.state = { 
+            rows: this.getStationsRows(),
+            order: 'asc',
+            orderBy: 'name',
+            page: 0,
+            rowsPerPage: 5
+        };
+    }
+
+    /**
+     * Get all list rows for each stations in props
+     * @returns 
+     */
+    private getStationsRows(): Data[] {
         let rows: Data[] = [];
+
         this.props.stations.forEach((station) => {
             let gas: number[] = [];
             station.prices.forEach(price => gas[price.gas_id] = price.price);
@@ -49,63 +56,67 @@ class List extends React.Component<{ stations: Array<Station> }, { rows: any, or
             };
             rows.push(data);
         });
-        this.state = { rows: rows,
-            order: 'asc',
-            orderBy: 'name',
-            page: 0,
-            rowsPerPage: 5
-        };
+
+        return rows;
     }
 
-    componentDidMount() {
-
-    }
-
-    // Avoid a layout jump when reaching the last page with empty rows.
+    /** 
+     * Avoid a layout jump when reaching the last page with empty rows.
+    */
     private isEmptyRows() {
         return this.state.page > 0 ? Math.max(0, (1 + this.state.page) * this.state.rowsPerPage - this.state.rows.length) : 0
-    };
-
-    private ascendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-        if (b[orderBy] < a[orderBy]) return 1;
-        if (b[orderBy] > a[orderBy]) return -1;
-        return 0;
     }
 
-    private descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-        if (b[orderBy] < a[orderBy]) return -1;
-        if (b[orderBy] > a[orderBy]) return 1;
-        return 0;
-    }
-
+    /**
+     * Get the correct comparator to order the list
+     * @param order 
+     * @param orderBy 
+     * @returns 
+     */
     public getComparator<Key extends keyof any>(order: Order, orderBy: Key,): (
         a: { [key in Key]: number | string },
         b: { [key in Key]: number | string },
         ) => number {
         return order === 'desc'
-            ? (a, b) => this.descendingComparator(a, b, orderBy)
-            : (a, b) => this.ascendingComparator(a, b, orderBy);
+            ? (a, b) => this.listService.descendingComparator(a, b, orderBy)
+            : (a, b) => this.listService.ascendingComparator(a, b, orderBy);
     }
-      
+    
+    /**
+     * Called when the list order is updated
+     * @param property the property to order
+     */
     private handleRequestSort(property: keyof Data) {
         const isAsc = this.state.orderBy === property && this.state.order === 'asc';
         this.setState({ order: isAsc ? 'desc' : 'asc' });
         this.setState({ orderBy: property });
     }
-      
+    
+    /**
+     * Called when the user wants to change the list page
+     * @param event 
+     * @param newPage 
+     */
     private handleChangePage = (event: unknown, newPage: number) => {
         this.setState({ page: newPage });
     };
     
+    /**
+     * Called when the user wants to change the number of row displayed on the list
+     * @param event 
+     */
     private handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({ rowsPerPage: parseInt(event.target.value, 10) });
         this.setState({ page: 0 });
     };
       
-
+    /**
+     * Render the component
+     * @returns 
+     */
     render() {
         return (
-            <div className='list-container'>
+            <div className='list-container' data-testid="list-container">
                 <Paper sx={{ width: '100%', mb: 2 }}>
                 <TableContainer>
                     <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>

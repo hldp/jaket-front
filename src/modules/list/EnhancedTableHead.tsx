@@ -2,7 +2,7 @@ import { TableHead, TableRow, TableCell, TableSortLabel, Box } from "@mui/materi
 import React from "react";
 import { visuallyHidden } from '@mui/utils';
 
-interface Data {
+export interface Data {
   name: string;
   address: string;
   gas_1: number; //gazole
@@ -20,7 +20,7 @@ interface HeadCell {
     numeric: boolean;
 }
 
-type Order = 'asc' | 'desc';
+export type Order = 'asc' | 'desc';
 
 class EnhancedTableHead extends React.Component<{
     onRequestSort: (property: keyof Data) => void;

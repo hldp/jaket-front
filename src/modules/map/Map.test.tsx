@@ -9,8 +9,8 @@ describe('map component', () => {
 
     test('renders map', () => {
         render(<Map stations={stations}/>);
-        const linkElement = screen.getByTestId('map-container');
-        expect(linkElement).toBeInTheDocument();
+        const mapContainer = screen.getByTestId('map-container');
+        expect(mapContainer).toBeInTheDocument();
     });
 
 });
