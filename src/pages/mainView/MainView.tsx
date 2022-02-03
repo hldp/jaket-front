@@ -67,7 +67,7 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
             <Button onClick={this.buttonGroupListClick}>List</Button>
           </ButtonGroup>
           {
-            (this.state.displayedElement == 'map')?
+            (this.state.displayedElement === 'map')?
             <Map stations={this.state.stations}></Map>:
             <List stations={this.state.stations}></List> 
           }

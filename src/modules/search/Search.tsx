@@ -1,5 +1,5 @@
 
-import { Autocomplete, Box, Chip, CircularProgress, Grid, Slider, Stack, TextField } from "@mui/material";
+import { Autocomplete, Chip, CircularProgress, Grid, Slider, Stack, TextField } from "@mui/material";
 import React from "react";
 import { Adress } from "../../models/adress.model";
 import { Station } from "../../models/station.model";
@@ -137,14 +137,13 @@ class Search extends React.Component<{
                         }}/>}
                     />
                     <Slider defaultValue={10} aria-label="Rayon" valueLabelDisplay="auto" onChange={this.onRadiusChange}
-                    sx={{ color: "#fecc00" }}
+                    color="secondary"
                     />
                     <Stack direction="row" spacing={1} sx={{ marginTop: '10px'}} justifyContent="center">
                     {this.state.chipData.map((data, index) => {
                         return (
                             <Chip key={'chip_'+index} className="chip" label={data.label} color={data.color} 
                                 onClick={() => this.onSelectGaz(data)}
-                                /* sx={{ background: '#fecc00', color: 'black' }} */
                                 />
                         );
                     })}
