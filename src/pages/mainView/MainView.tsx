@@ -3,13 +3,13 @@ import Map from '../../modules/map/Map';
 import { Station } from '../../models/station.model';
 import Search from '../../modules/search/Search';
 import AppBarCustom from '../../modules/appBar/AppBar';
-import { Box, Grid } from '@mui/material';
+import { Box, Button, ButtonGroup, Grid } from '@mui/material';
 import './MainView.css';
 import { GazType } from '../../models/gazType.enum';
 import { Adress } from '../../models/adress.model';
+import List from '../../modules/list/List';
 
-
-class MainView extends React.Component<{},{ stations: Station[], radius: number, gazSelected: GazType[], citySelected: Adress }> {
+class MainView extends React.Component<{},{ stations: Station[], radius: number, gazSelected: GazType[], citySelected: Adress, displayedElement: string }> {
 
   constructor(props: any) {
     super(props);
@@ -18,11 +18,14 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
         radius: 10,
         gazSelected: [],
         citySelected: new Adress(0,0,"noCity"),
+        displayedElement: 'map'
     }
-    this.updateStations = this.updateStations.bind(this);
+    this.updateStations = this.updateStations.bind(this);        
     this.updateRadius = this.updateRadius.bind(this);
     this.updateSelectedGaz= this.updateSelectedGaz.bind(this);
     this.updateCity = this.updateCity.bind(this);
+    this.buttonGroupMapClick = this.buttonGroupMapClick.bind(this);
+    this.buttonGroupListClick = this.buttonGroupListClick.bind(this);
   }
 
   public updateStations(stations: Station[]): void {
@@ -41,9 +44,13 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
     this.setState({citySelected});
   }
 
-  public handleLeftDrawerToggle() {
+  public buttonGroupMapClick() {
+    this.setState({ displayedElement: 'map' })
+  }
 
-  };
+  public buttonGroupListClick() {
+    this.setState({ displayedElement: 'list' })
+  }
 
   render() {
     return (
@@ -55,8 +62,15 @@ class MainView extends React.Component<{},{ stations: Station[], radius: number,
           <Search updateStations={this.updateStations} updateRadius={this.updateRadius} updateSelectedGaz={this.updateSelectedGaz} updateCity={this.updateCity}></Search>
         </Box>
         <Box component={Grid} item xs={12} className='map-list-container'>
-          <Map stations={this.state.stations}></Map>
-          {/* <List stations={this.stations}></List> */}
+          <ButtonGroup variant="contained" className='button-group' aria-label="outlined primary button group">
+            <Button onClick={this.buttonGroupMapClick}>Map</Button>
+            <Button onClick={this.buttonGroupListClick}>List</Button>
+          </ButtonGroup>
+          {
+            (this.state.displayedElement == 'map')?
+            <Map stations={this.state.stations}></Map>:
+            <List stations={this.state.stations}></List> 
+          }
         </Box>
       </Box>
     );

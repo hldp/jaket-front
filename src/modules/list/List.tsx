@@ -1,9 +1,10 @@
-import React from "react";
+import React, { Fragment } from "react";
 import './List.css';
 import { Station } from "../../models/station.model";
 import { TableContainer, Paper, Table, TableRow, TableCell, TableBody, Box, TablePagination } from "@mui/material";
 import EnhancedTableHead from "./EnhancedTableHead";
 import MapService from "../map/Map.service";
+import { ClassNames } from "@emotion/react";
 
 interface Data {
     name: string;
@@ -104,7 +105,7 @@ class List extends React.Component<{ stations: Array<Station> }, { rows: any, or
 
     render() {
         return (
-            <Box sx={{ width: '100%' }}>
+            <div className='list-container'>
                 <Paper sx={{ width: '100%', mb: 2 }}>
                 <TableContainer>
                     <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
@@ -154,7 +155,7 @@ class List extends React.Component<{ stations: Array<Station> }, { rows: any, or
                     onRowsPerPageChange={this.handleChangeRowsPerPage}
                 />
                 </Paper>
-            </Box>
+            </div>
             );
     }
 
