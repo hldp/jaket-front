@@ -8,7 +8,7 @@ import L from "leaflet";
 describe('map component', () => {
 
     test('renders map', () => {
-        render(<Map stations={stations}/>);
+        render(<Map height={'600px'} stations={stations}/>);
         const mapContainer = screen.getByTestId('map-container');
         expect(mapContainer).toBeInTheDocument();
     });

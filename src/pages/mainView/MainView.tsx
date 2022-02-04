@@ -90,7 +90,7 @@ class MainView extends React.Component<{},{
           </ButtonGroup>
           {
             (this.state.displayedElement === 'map')?
-            <Map stations={this.state.stations} centerOn={this.state.centerMapOn} radius={this.state.radius}></Map>:
+            <Map stations={this.state.stations} centerOn={this.state.centerMapOn} radius={this.state.radius} height='600px'></Map>:
             <List stations={this.state.stations}></List> 
           }
         </Box>

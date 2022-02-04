@@ -12,7 +12,8 @@ import { Adress } from "../../models/adress.model";
 class Map extends React.Component<{ 
     stations: Array<Station>,
     centerOn?: Adress | null,
-    radius?: number
+    radius?: number,
+    height: string
  }, { geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, clusters: Array<Array<MarkerObject>>, radius: L.Circle | null }> {
 
     public map: L.Map | null;
@@ -37,7 +38,7 @@ class Map extends React.Component<{
         this.displayStations();
     }
 
-    componentDidUpdate(previousProps: { stations: Station[]; centerOn: Adress; radius: number }, previousState: any){
+    componentDidUpdate(previousProps: { stations: Station[]; centerOn: Adress; radius: number, height: string }, previousState: any){
         if (previousProps.stations !== this.props.stations) {
             this.displayStations();
         }
@@ -206,7 +207,7 @@ class Map extends React.Component<{
     render(): React.ReactNode {
         return(
             <div className="map-container" data-testid="map-container">
-                <MapContainer center={[46.227638, 2.213749]} 
+                <MapContainer center={[46.227638, 2.213749]} style={{ height: this.props.height }}
                               zoom={6} scrollWheelZoom={true} className="map" trackResize={false} doubleClickZoom={true} 
                               zoomControl={true} whenCreated={(map) => { this.map = map }}>
                     <TileLayer
