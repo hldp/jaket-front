@@ -5,14 +5,14 @@ import Search from '../../modules/search/Search';
 import AppBarCustom from '../../modules/appBar/AppBar';
 import { Box, Button, ButtonGroup, Grid } from '@mui/material';
 import './MainView.css';
-import { GazType } from '../../models/gazType.enum';
+import { GasType } from '../../models/gasType.enum';
 import { Adress } from '../../models/adress.model';
 import List from '../../modules/list/List';
 
 class MainView extends React.Component<{},{ 
   stations: Station[], 
   radius: number, 
-  gazSelected: GazType[], 
+  gazSelected: GasType[], 
   citySelected: Adress, 
   displayedElement: string,
   centerMapOn: Adress | null }> {
@@ -44,7 +44,7 @@ class MainView extends React.Component<{},{
     this.setState({radius})
   }
 
-  public updateSelectedGaz(gazSelected: GazType[]): void{
+  public updateSelectedGaz(gazSelected: GasType[]): void{
     this.setState({gazSelected})
   }
 

@@ -13,7 +13,8 @@ class Map extends React.Component<{
     stations: Array<Station>,
     centerOn?: Adress | null,
     radius?: number,
-    height: string
+    height: string,
+    enableStationPopup?: boolean
  }, { geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, clusters: Array<Array<MarkerObject>>, radius: L.Circle | null }> {
 
     public map: L.Map | null;
@@ -34,7 +35,8 @@ class Map extends React.Component<{
     }
 
     componentDidMount() {
-        this.subscribeToGeolocation();
+        let panToUserPosition: boolean = this.props.centerOn ? false : true;
+        this.subscribeToGeolocation(panToUserPosition);
         this.displayStations();
     }
 
@@ -42,9 +44,9 @@ class Map extends React.Component<{
         if (previousProps.stations !== this.props.stations) {
             this.displayStations();
         }
-        if (this.props.centerOn != null && this.map && previousProps.centerOn !== this.props.centerOn) {
+        if (this.props.centerOn != null && this.map) {
             if (this.props.centerOn.label === 'position') {
-                this.subscribeToGeolocation();
+                this.subscribeToGeolocation(true);
             }
             else {
                 this.mapCenter = [this.props.centerOn.latitude, this.props.centerOn.longitude];
@@ -72,6 +74,7 @@ class Map extends React.Component<{
     private displayStations() {
         let cluster: MarkerObject[] = [];
         this.props.stations.forEach((station: Station) => {
+
             cluster.push(this.mapService.getStationMarker(station));
         });
         this.addCluster(cluster);
@@ -91,13 +94,13 @@ class Map extends React.Component<{
      * Subscribe to navigator geolocation events.
      * When an event is triggered, a marker is created on the map
      */
-    private subscribeToGeolocation() {
+    private subscribeToGeolocation(panToUserPosition:boolean) {
         this.setState({ geolocation: null })
         if (navigator.geolocation)
         {
             navigator.geolocation.getCurrentPosition((position) =>
             {
-                let panToUserPosition = true;
+                
 
                 let latitude = position.coords.latitude;
                 let longitude = position.coords.longitude;
@@ -137,27 +140,32 @@ class Map extends React.Component<{
      */
     private getMarker(marker: MarkerObject, id: string) {
         return <Marker key={`marker-${id}`} position={marker.position} icon={marker.icon} eventHandlers={{
-            click: (e) => {
-                //auto center marker on click
-                let map_height = 600;
-                let popup_height = 320;
-                if(map_height >= popup_height) {
-                    let marker_lat_lng = this.map?.project(e.target.getLatLng());
-                    if (marker_lat_lng) {
-                        marker_lat_lng.y -= popup_height / 2;
-                        let marker_adjusted = this.map?.unproject(marker_lat_lng);
-                        if (marker_adjusted) this.map?.panTo([marker_adjusted?.lat, marker_adjusted?.lng]);
+            
+            click: (e) => { 
+                if(this.props.enableStationPopup === undefined || this.props.enableStationPopup === true){
+                    //auto center marker on click
+                    let map_height = 600;
+                    let popup_height = 320;
+                    if(map_height >= popup_height) {
+                        let marker_lat_lng = this.map?.project(e.target.getLatLng());
+                        if (marker_lat_lng) {
+                            marker_lat_lng.y -= popup_height / 2;
+                            let marker_adjusted = this.map?.unproject(marker_lat_lng);
+                            if (marker_adjusted) this.map?.panTo([marker_adjusted?.lat, marker_adjusted?.lng]);
+                        }
                     }
+                    else {
+                        this.mapCenter = e.target.getLatLng();
+                        this.map?.flyTo(this.mapCenter, 17, {animate: false});
+                    }
+
+                    e.target.openPopup();
                 }
-                else {
-                    this.mapCenter = e.target.getLatLng();
-                    this.map?.flyTo(this.mapCenter, 17, {animate: false});
-                }
-                e.target.openPopup();
+
             },
           }}>
             {
-                (marker.popup) ?
+                (marker.popup && this.props.enableStationPopup) ?
                 <Popup autoPan={marker.popup.autoPan} minWidth={marker.popup.minWidth} maxWidth={marker.popup.maxWidth} maxHeight={marker.popup.maxHeight}>
                     <div dangerouslySetInnerHTML={{__html: marker.popup.content}} />
                 </Popup> 

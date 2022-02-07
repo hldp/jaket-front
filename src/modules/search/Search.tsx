@@ -7,13 +7,13 @@ import AdressesApi from "../services/adressesAPI.service";
 import { ChipData } from "./chipData.model";
 import stations from '../../mock-data/stations';
 import './Search.css'
-import { GazType } from "../../models/gazType.enum";
+import { GasType } from "../../models/gasType.enum";
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 
 class Search extends React.Component<{
     updateStations: (stations: Station[]) => void;
     updateRadius: (radius: number)=> void;
-    updateSelectedGaz: (selectedGaz: GazType[]) => void;
+    updateSelectedGaz: (selectedGaz: GasType[]) => void;
     updateCity: (city: Adress) => void;
     centerOnPositionTriggered: () => void
 }, {adresses: Adress[], chipData:ChipData[]}>{
@@ -23,16 +23,16 @@ class Search extends React.Component<{
     private adressesApi: AdressesApi = new AdressesApi();
     private searchTerms: String = "";
     private loading: boolean = false;
-    private gazSelected: GazType[] = [GazType.DIESEL, GazType.SP95, GazType.SP98, GazType.ETHANOL, GazType.GPL];
+    private gazSelected: GasType[] = [GasType.DIESEL, GasType.SP95, GasType.SP98, GasType.ETHANOL, GasType.GPL];
 
     constructor(props : any){
         super(props);
         this.state = {adresses: [], chipData:[
-            { key: 0, label: GazType.SP95, color: 'primary' },
-            { key: 1, label: GazType.SP98, color: 'primary' },
-            { key: 2, label: GazType.DIESEL, color: 'primary' },
-            { key: 3, label: GazType.GPL, color: 'primary' },
-            { key: 4, label: GazType.ETHANOL, color: 'primary' },
+            { key: 0, label: GasType.SP95, color: 'primary' },
+            { key: 1, label: GasType.SP98, color: 'primary' },
+            { key: 2, label: GasType.DIESEL, color: 'primary' },
+            { key: 3, label: GasType.GPL, color: 'primary' },
+            { key: 4, label: GasType.ETHANOL, color: 'primary' },
         ]};
 
         this.props.updateRadius(this.defaultRadiusValue)

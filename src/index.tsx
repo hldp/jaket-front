@@ -6,15 +6,11 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 ReactDOM.render(
-  <BrowserRouter>
     <React.StrictMode>
       <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="crossOrigin=""/>
       <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"></link>
-      <Routes>
-        <Route path="/" element={<App />} />
-      </Routes>
-    </React.StrictMode>
-  </BrowserRouter>,
+      <App></App>
+    </React.StrictMode>,
   document.getElementById('root')
 );
 
