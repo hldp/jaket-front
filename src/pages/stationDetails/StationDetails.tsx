@@ -1,18 +1,19 @@
-import { AutoAwesomeMosaicSharp, Directions, Navigation } from "@mui/icons-material";
-import { Button, Card, CardContent, IconButton, Paper, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Directions } from "@mui/icons-material";
+import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card } from "@mui/material";
 import React from "react";
-import { CartesianGrid, LineChart, Tooltip, XAxis, Line, YAxis, Legend, Label, ResponsiveContainer } from "recharts";
 import { Adress } from "../../models/adress.model";
 import { Station } from "../../models/station.model";
 import AppBarCustom from "../../modules/appBar/AppBar";
 import Map from "../../modules/map/Map";
 import './StationDetails.css'
 import { GasType } from "../../models/gasType.enum";
+import { GasDataPrice } from "../../models/gasDataPrice.model";
+import LineGraph from "../../modules/lineGraph/LineGraph"
 
 class StationDetails extends React.Component<{station: Station},{station: Station}> {
 
 
-      private dataTemp = [
+      private dataTemp: GasDataPrice[] = [
         { gas: GasType.DIESEL, data: [
             {date: "Lundi", price: 1.56},
             {date: "Mardi", price: 1.56},
@@ -73,14 +74,7 @@ class StationDetails extends React.Component<{station: Station},{station: Statio
     private getStationData(period: string):void{
     }
 
-    private getColorPerGas(gaz : GasType): string{
-        if(gaz === GasType.DIESEL) return "#ff7300";
-        if(gaz === GasType.SP98) return "#3232a8";
-        if(gaz === GasType.SP95) return "#6464a3";
-        if(gaz === GasType.ETHANOL) return "#c7c114";
-        if(gaz === GasType.GPL) return "#45a2c4";
-        return "#000000";
-    }
+
 
     render()  {
         return (
@@ -117,25 +111,7 @@ class StationDetails extends React.Component<{station: Station},{station: Statio
                 </Card>
                 <Map stations={[this.state.station]} height={"300px"} centerOn={this.getStationAdress()} enableStationPopup={false}></Map>
                 <Card className="infoCard">
-                <ResponsiveContainer width="100%" height={300}>
-                    <LineChart margin={{ top: 10, right: 10, left: 5, bottom: 10 }}>
-                        <XAxis dataKey="date" type="category" allowDuplicatedCategory={false}  
-                        style={{
-                            fontSize: '0.7rem',
-                            fontFamily: 'Arial'
-                        }}/>
-                        <YAxis width={40} dataKey="price" type="number" unit="€" domain={['auto', 'auto']} 
-                        style={{
-                            fontSize: '0.7rem',
-                            fontFamily: 'Arial',
-                        }}></YAxis>
-                        <Tooltip/>
-                        <Legend />
-                        {this.dataTemp.map(s => (
-                            <Line stroke={this.getColorPerGas(s.gas)} dataKey="price" data={s.data} name={s.gas} key={s.gas} />
-                        ))}
-                    </LineChart>
-                </ResponsiveContainer>
+                    <LineGraph gasData={this.dataTemp}></LineGraph>
                 </Card>
             </div>
         );
