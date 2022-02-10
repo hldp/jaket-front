@@ -32,10 +32,10 @@ class App extends React.Component<{},{}> {
       <BrowserRouter>
         <ThemeProvider theme={this.theme}>
           <div className="App">
-        <Routes>
-            <Route path="/" element={<MainView></MainView>} />
-            <Route path="/stationDetails" element={ <StationDetails station={stations[0]}></StationDetails>}></Route>
-        </Routes>
+            <Routes>
+                <Route path="/" element={<MainView></MainView>} />
+                <Route path="/stationDetails" element={ <StationDetails station={stations[0]}></StationDetails>}></Route>
+            </Routes>
           </div>
         </ThemeProvider>
       </BrowserRouter>
