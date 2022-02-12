@@ -10,13 +10,15 @@ import './Search.css'
 import { GasType } from "../../models/gasType.enum";
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import StationsApi from "../services/stationsAPI.service";
+import { connect } from "react-redux";
+import { updateRadius, updateSelectedCity, updateSelectedGas } from "../../store/slices/stationFilter";
 
 class Search extends React.Component<{
     updateStations: (stations: Station[]) => void;
-    updateRadius: (radius: number)=> void;
-    updateSelectedGaz: (selectedGaz: GasType[]) => void;
-    updateCity: (city: Adress) => void;
-    centerOnPositionTriggered: () => void
+    centerOnPositionTriggered: () => void,
+    stationFilter:any,
+    dispatch:any
+
 }, {adresses: Adress[], chipData:ChipData[]}>{
 
     public defaultRadiusValue = 10;
@@ -37,7 +39,7 @@ class Search extends React.Component<{
             { key: 4, label: GasType.ETHANOL, color: 'primary' },
         ]};
 
-        this.props.updateRadius(this.defaultRadiusValue)
+        this.props.dispatch(updateRadius(this.defaultRadiusValue));
         this.onSelectCity = this.onSelectCity.bind(this);
         this.onUserCityInput = this.onUserCityInput.bind(this);
         this.onSelectGaz = this.onSelectGaz.bind(this);
@@ -46,7 +48,7 @@ class Search extends React.Component<{
     }
 
     componentDidMount() {
-        this.stationsApi.getStations().then((stations) => {
+        this.stationsApi.getStations(["position"]).then((stations) => {
             this.props.updateStations(stations);
         })
     }
@@ -58,7 +60,7 @@ class Search extends React.Component<{
      * @param newAdress the new adress
      */
     onSelectCity(e:any, newAdress: any){
-        this.props.updateCity(newAdress);
+        this.props.dispatch(updateSelectedCity(JSON.stringify(newAdress)));
     }
 
     /**
@@ -105,7 +107,7 @@ class Search extends React.Component<{
         });
 
         this.setState({chipData : this.state.chipData})
-        this.props.updateSelectedGaz(this.gazSelected);
+        this.props.dispatch(updateSelectedGas(this.gazSelected));
     }
 
 
@@ -114,8 +116,8 @@ class Search extends React.Component<{
      * Call the updateRadius method from parent view
      * @param data the event from the slider change
      */
-    onRadiusChange(data:any){
-        this.props.updateRadius(data.target.value)
+    onRadiusChange(event:any, value:any){
+        this.props.dispatch(updateRadius(value));
     }
 
     /**
@@ -156,7 +158,7 @@ class Search extends React.Component<{
                             <GpsFixedIcon fontSize="large"/>
                         </IconButton>
                     </Stack>
-                    <Slider defaultValue={this.defaultRadiusValue} aria-label="Rayon" valueLabelDisplay="auto" onChange={this.onRadiusChange}
+                    <Slider defaultValue={this.defaultRadiusValue} aria-label="Rayon" valueLabelDisplay="auto" onChangeCommitted={this.onRadiusChange}
                     color="secondary"/>
                     <Stack direction="row" spacing={1} sx={{ marginTop: '10px'}} justifyContent="center">
                     {this.state.chipData.map((data, index) => {
@@ -174,4 +176,11 @@ class Search extends React.Component<{
     }
 
 }
-export default Search;
+
+const mapStateToProps = (state: any) => {
+    return {
+      stationFilter: state.stationFilter
+    }
+  }
+
+export default connect(mapStateToProps)(Search);

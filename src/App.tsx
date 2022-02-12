@@ -33,7 +33,7 @@ class App extends React.Component<{},{}> {
         <ThemeProvider theme={this.theme}>
           <div className="App">
             <Routes>
-                <Route path="/" element={<MainView></MainView>} />
+                <Route path="/" element={<MainView ></MainView>} />
                 <Route path="/stationDetails" element={ <StationDetails station={stations[0]}></StationDetails>}></Route>
             </Routes>
           </div>

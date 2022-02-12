@@ -8,14 +8,15 @@ import './MainView.css';
 import { GasType } from '../../models/gasType.enum';
 import { Adress } from '../../models/adress.model';
 import List from '../../modules/list/List';
+import { connect } from 'react-redux';
 
-class MainView extends React.Component<{},{ 
+class MainView extends React.Component<{stationFilter:any, dispatch:any},{ 
   stations: Station[], 
   radius: number, 
   gazSelected: GasType[], 
   citySelected: Adress, 
   displayedElement: string,
-  centerMapOn: Adress | null }> {
+  centerMapOn: Adress | null}> {
 
   constructor(props: any) {
     super(props);
@@ -25,7 +26,7 @@ class MainView extends React.Component<{},{
         gazSelected: [],
         citySelected: new Adress(0,0,"noCity"),
         displayedElement: 'map',
-        centerMapOn: null
+        centerMapOn: null,
     }
     this.updateStations = this.updateStations.bind(this);        
     this.updateRadius = this.updateRadius.bind(this);
@@ -34,6 +35,8 @@ class MainView extends React.Component<{},{
     this.buttonGroupMapClick = this.buttonGroupMapClick.bind(this);
     this.buttonGroupListClick = this.buttonGroupListClick.bind(this);
     this.centerOnPositionTriggered = this.centerOnPositionTriggered.bind(this);
+    console.log(this.props);
+
   }
 
   public updateStations(stations: Station[]): void {
@@ -74,13 +77,13 @@ class MainView extends React.Component<{},{
 
   render() {
     return (
+
       <Box component={Grid} container spacing={2}>
         <Box component={Grid} item xs={12}>
           <AppBarCustom></AppBarCustom>
         </Box>
         <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-container'>
-          <Search updateStations={this.updateStations} updateRadius={this.updateRadius} 
-                  updateSelectedGaz={this.updateSelectedGaz} updateCity={this.updateCity}
+          <Search updateStations={this.updateStations}
                   centerOnPositionTriggered={this.centerOnPositionTriggered}></Search>
         </Box>
         <Box component={Grid} item xs={12} className='map-list-container'>
@@ -99,4 +102,9 @@ class MainView extends React.Component<{},{
   }
 }
 
-export default MainView;
+const mapStateToProps = (state: any) => {
+  return {
+    stationFilter: state.stationFilter
+  }
+}
+export default connect(mapStateToProps)(MainView);
