@@ -1,8 +1,8 @@
-import { GazType } from "../../models/gazType.enum";
+import { GasType } from "../../models/gasType.enum";
 
 export interface ChipData {
     key: number;
-    label: GazType;
+    label: GasType;
     color: any;
   }
   

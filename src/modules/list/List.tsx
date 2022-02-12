@@ -5,9 +5,10 @@ import { TableContainer, Paper, Table, TableRow, TableCell, TableBody, TablePagi
 import EnhancedTableHead, { Data, Order } from "./EnhancedTableHead";
 import MapService from "../map/Map.service";
 import { ListService } from "./List.service";
+import { connect } from "react-redux";
 
 // Props, state
-class List extends React.Component<{ stations: Array<Station> }, { rows: any, order: Order, orderBy: keyof Data, page: number, rowsPerPage: number }> {
+class List extends React.Component<{ stations: Array<Station>, counter:any }, { rows: any, order: Order, orderBy: keyof Data, page: number, rowsPerPage: number }> {
 
     private mapService: MapService;
     private listService: ListService;
@@ -118,6 +119,7 @@ class List extends React.Component<{ stations: Array<Station> }, { rows: any, or
         return (
             <div className='list-container' data-testid="list-container">
                 <Paper sx={{ width: '100%', mb: 2 }}>
+                    <div>{this.props.counter.value}</div>
                 <TableContainer>
                     <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
                     <EnhancedTableHead
@@ -173,4 +175,9 @@ class List extends React.Component<{ stations: Array<Station> }, { rows: any, or
 
 }
 
-export default List;
+const mapStateToProps = (state: any) => {
+    return {
+      counter: state.counter
+    }
+  }
+  export default connect(mapStateToProps)(List);

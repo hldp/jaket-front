@@ -2,7 +2,7 @@ import { Station } from "../models/station.model"
 
 let stations: Array<Station> = [{    
     id: 1,
-    name: 'name_1',
+    name: 'Station E.Leclerc Rocheville',
     latitude: 43.552550,
     longitude: 7.022886,
     address: "75 rue d'antibes",

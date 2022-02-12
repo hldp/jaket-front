@@ -36,7 +36,7 @@ class MapService {
         return new MarkerObject(station.id, 
             L.latLng(station.latitude, station.longitude), 
             markerIcon, 
-            {
+            {   
                 content: popupHtml,
                 autoPan : true, 
                 minWidth: 320,
