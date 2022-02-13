@@ -1,12 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import List from './List';
-import stations from '../../mock-data/stations';
 import { ListService } from './List.service';
 
 describe('list component', () => {
 
     test('renders list', () => {
-        render(<List stations={stations}/>);
+        render(<List/>);
         const listContainer = screen.getByTestId('list-container');
         expect(listContainer).toBeInTheDocument();
     });

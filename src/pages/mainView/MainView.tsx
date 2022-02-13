@@ -1,6 +1,5 @@
 import React from 'react';
 import Map from '../../modules/map/Map';
-import { Station } from '../../models/station.model';
 import Search from '../../modules/search/Search';
 import AppBarCustom from '../../modules/appBar/AppBar';
 import { Box, Button, ButtonGroup, Grid } from '@mui/material';
@@ -10,8 +9,7 @@ import { Adress } from '../../models/adress.model';
 import List from '../../modules/list/List';
 import { connect } from 'react-redux';
 
-class MainView extends React.Component<{stationFilter:any, dispatch:any},{ 
-  stations: Station[], 
+class MainView extends React.Component<{stationFilter:any, dispatch:any},{
   radius: number, 
   gazSelected: GasType[], 
   citySelected: Adress, 
@@ -21,26 +19,18 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
   constructor(props: any) {
     super(props);
     this.state = {
-        stations: [],
         radius: 10,
         gazSelected: [],
         citySelected: new Adress(0,0,"noCity"),
         displayedElement: 'map',
         centerMapOn: null,
     }
-    this.updateStations = this.updateStations.bind(this);        
     this.updateRadius = this.updateRadius.bind(this);
     this.updateSelectedGaz= this.updateSelectedGaz.bind(this);
     this.updateCity = this.updateCity.bind(this);
     this.buttonGroupMapClick = this.buttonGroupMapClick.bind(this);
     this.buttonGroupListClick = this.buttonGroupListClick.bind(this);
     this.centerOnPositionTriggered = this.centerOnPositionTriggered.bind(this);
-    console.log(this.props);
-
-  }
-
-  public updateStations(stations: Station[]): void {
-    this.setState({ stations });
   }
 
   public updateRadius(radius:number): void{
@@ -83,8 +73,7 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
           <AppBarCustom></AppBarCustom>
         </Box>
         <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-container'>
-          <Search updateStations={this.updateStations}
-                  centerOnPositionTriggered={this.centerOnPositionTriggered}></Search>
+          <Search centerOnPositionTriggered={this.centerOnPositionTriggered}></Search>
         </Box>
         <Box component={Grid} item xs={12} className='map-list-container'>
           <ButtonGroup variant="contained" className='button-group' aria-label="outlined primary button group">
@@ -93,8 +82,8 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
           </ButtonGroup>
           {
             (this.state.displayedElement === 'map')?
-            <Map stations={this.state.stations} centerOn={this.state.centerMapOn} radius={this.state.radius} height='600px' enableStationPopup={true}></Map>:
-            <List stations={this.state.stations}></List> 
+            <Map centerOn={this.state.centerMapOn} radius={this.state.radius} height='600px' enableStationPopup={true}></Map>:
+            <List></List> 
           }
         </Box>
       </Box>

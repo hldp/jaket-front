@@ -7,10 +7,11 @@ import { Station } from "../../models/station.model";
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import MapService from "./Map.service";
 import { Adress } from "../../models/adress.model";
+import StationsApi from "../services/stationsAPI.service";
+import { Subscription } from "rxjs";
 
 // Props, state
 class Map extends React.Component<{ 
-    stations: Array<Station>,
     centerOn?: Adress | null,
     radius?: number,
     height: string,
@@ -21,6 +22,8 @@ class Map extends React.Component<{
 
     private mapService: MapService;
     private mapCenter: LatLngExpression;
+    private stationsApi: StationsApi = new StationsApi();
+    private stations_request: Subscription | undefined;
 
     constructor(props: any) {
         super(props);
@@ -37,13 +40,14 @@ class Map extends React.Component<{
     componentDidMount() {
         let panToUserPosition: boolean = this.props.centerOn ? false : true;
         this.subscribeToGeolocation(panToUserPosition);
-        this.displayStations();
+        this.loadStations();
+    }
+
+    componentWillUnmount() {
+        if (this.stations_request) this.stations_request.unsubscribe();
     }
 
     componentDidUpdate(previousProps: { stations: Station[]; centerOn: Adress; radius: number, height: string }, previousState: any){
-        if (previousProps.stations !== this.props.stations) {
-            this.displayStations();
-        }
         if (this.props.centerOn != null && this.map) {
             if (this.props.centerOn.label === 'position') {
                 this.subscribeToGeolocation(true);
@@ -53,9 +57,9 @@ class Map extends React.Component<{
                 this.map.flyTo(this.mapCenter, 13, { animate: false });
             }
         }
-        if (previousProps.radius !== this.props.radius) {
-            this.updateRadius();
-        }
+        // if (previousProps.radius !== this.props.radius) {
+        //     this.updateRadius();
+        // }
     }
 
     /**
@@ -68,13 +72,18 @@ class Map extends React.Component<{
         }
     }
 
+    private loadStations() {
+        this.stations_request = this.stationsApi.getStations(["position"]).subscribe((stations: Station[]) => {
+            this.displayStations(stations);
+        })
+    }
+
     /**
      * Display all stations received on the map
      */
-    private displayStations() {
+    private displayStations(stations: Station[]) {
         let cluster: MarkerObject[] = [];
-        this.props.stations.forEach((station: Station) => {
-
+        stations.forEach((station: Station) => {
             cluster.push(this.mapService.getStationMarker(station));
         });
         this.addCluster(cluster);

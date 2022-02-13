@@ -109,7 +109,8 @@ class StationDetails extends React.Component<{station: Station},{station: Statio
                     </Table>
                     </CardContent>
                 </Card>
-                <Map stations={[this.state.station]} height={"300px"} centerOn={this.getStationAdress()} enableStationPopup={false}></Map>
+                {/* // TODO display only one station on the map */}
+                <Map height={"300px"} centerOn={this.getStationAdress()} enableStationPopup={false}></Map>
                 <Card className="infoCard">
                     <LineGraph gasData={this.dataTemp}></LineGraph>
                 </Card>

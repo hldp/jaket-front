@@ -1,14 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import Map from './Map';
 import MapService from './Map.service';
-import stations from '../../mock-data/stations';
 import { Station } from '../../models/station.model';
 import L from "leaflet";
 
 describe('map component', () => {
 
     test('renders map', () => {
-        render(<Map height={'600px'} stations={stations}/>);
+        render(<Map height={'600px'}/>);
         const mapContainer = screen.getByTestId('map-container');
         expect(mapContainer).toBeInTheDocument();
     });

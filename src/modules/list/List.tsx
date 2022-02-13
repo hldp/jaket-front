@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import './List.css';
 import { Station } from "../../models/station.model";
 import { TableContainer, Paper, Table, TableRow, TableCell, TableBody, TablePagination } from "@mui/material";
@@ -6,12 +6,16 @@ import EnhancedTableHead, { Data, Order } from "./EnhancedTableHead";
 import MapService from "../map/Map.service";
 import { ListService } from "./List.service";
 import { connect } from "react-redux";
+import StationsApi from "../services/stationsAPI.service";
+import { Subscription } from "rxjs";
 
 // Props, state
-class List extends React.Component<{ stations: Array<Station>, counter:any }, { rows: any, order: Order, orderBy: keyof Data, page: number, rowsPerPage: number }> {
+class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof Data, page: number, rowsPerPage: number }> {
 
     private mapService: MapService;
     private listService: ListService;
+    private stationsApi: StationsApi = new StationsApi();
+    private stations_request: Subscription | undefined;
 
     constructor(props: any) {
         super(props);
@@ -25,7 +29,7 @@ class List extends React.Component<{ stations: Array<Station>, counter:any }, { 
 
         // Init state
         this.state = { 
-            rows: this.getStationsRows(),
+            rows: [],
             order: 'asc',
             orderBy: 'name',
             page: 0,
@@ -33,14 +37,29 @@ class List extends React.Component<{ stations: Array<Station>, counter:any }, { 
         };
     }
 
+    componentDidMount() {
+        this.loadStations();
+    }
+
+    componentWillUnmount() {
+        if (this.stations_request) this.stations_request.unsubscribe();
+    }
+
+    private loadStations() {
+        this.stations_request = this.stationsApi.getStations(["position"]).subscribe((stations: Station[]) => {
+            this.setState({ rows: this.getStationsRows(stations) })
+        })
+    }
+
     /**
      * Get all list rows for each stations in props
+     * @param stations 
      * @returns 
      */
-    private getStationsRows(): Data[] {
+    private getStationsRows(stations: Station[]): Data[] {
         let rows: Data[] = [];
 
-        this.props.stations.forEach((station) => {
+        stations.forEach((station) => {
             let gas: number[] = [];
             station.prices.forEach(price => gas[price.gas_id] = price.price);
             let is_open = this.mapService.isStationOpened(station);
@@ -119,7 +138,6 @@ class List extends React.Component<{ stations: Array<Station>, counter:any }, { 
         return (
             <div className='list-container' data-testid="list-container">
                 <Paper sx={{ width: '100%', mb: 2 }}>
-                    <div>{this.props.counter.value}</div>
                 <TableContainer>
                     <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
                     <EnhancedTableHead
@@ -135,7 +153,7 @@ class List extends React.Component<{ stations: Array<Station>, counter:any }, { 
                             const labelId = `enhanced-table-checkbox-${index}`;
         
                             return (
-                            <TableRow hover role="checkbox" tabIndex={-1}key={row.name}>
+                            <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                                 <TableCell component="th" id={labelId} scope="row" padding="none">
                                     {row.name}
                                 </TableCell>
@@ -175,9 +193,4 @@ class List extends React.Component<{ stations: Array<Station>, counter:any }, { 
 
 }
 
-const mapStateToProps = (state: any) => {
-    return {
-      counter: state.counter
-    }
-  }
-  export default connect(mapStateToProps)(List);
+export default List;

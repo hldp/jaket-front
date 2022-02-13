@@ -2,19 +2,15 @@
 import { Autocomplete, Chip, CircularProgress, Grid, IconButton, Slider, Stack, TextField } from "@mui/material";
 import React from "react";
 import { Adress } from "../../models/adress.model";
-import { Station } from "../../models/station.model";
 import AdressesApi from "../services/adressesAPI.service";
 import { ChipData } from "./chipData.model";
-// import stations from '../../mock-data/stations';
 import './Search.css'
 import { GasType } from "../../models/gasType.enum";
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import StationsApi from "../services/stationsAPI.service";
 import { connect } from "react-redux";
 import { updateRadius, updateSelectedCity, updateSelectedGas } from "../../store/slices/stationFilter";
 
 class Search extends React.Component<{
-    updateStations: (stations: Station[]) => void;
     centerOnPositionTriggered: () => void,
     stationFilter:any,
     dispatch:any
@@ -24,7 +20,6 @@ class Search extends React.Component<{
     public defaultRadiusValue = 10;
 
     private adressesApi: AdressesApi = new AdressesApi();
-    private stationsApi: StationsApi = new StationsApi();
     private searchTerms: String = "";
     private loading: boolean = false;
     private gazSelected: GasType[] = [GasType.DIESEL, GasType.SP95, GasType.SP98, GasType.ETHANOL, GasType.GPL];
@@ -45,12 +40,6 @@ class Search extends React.Component<{
         this.onSelectGaz = this.onSelectGaz.bind(this);
         this.onRadiusChange = this.onRadiusChange.bind(this);
         this.handleGpsClick = this.handleGpsClick.bind(this);
-    }
-
-    componentDidMount() {
-        this.stationsApi.getStations(["position"]).then((stations) => {
-            this.props.updateStations(stations);
-        })
     }
 
     /**

@@ -4,23 +4,24 @@ import { GasType } from "../../models/gasType.enum";
 import { Price } from "../../models/price.model";
 import { Schedule } from "../../models/schedule.model";
 import { Station } from "../../models/station.model";
+import { from, Observable } from "rxjs";
 
  export class StationsApi {
 
     private DEV_URL : string = "http://localhost:3001/";
     private CLOUD_URL: string = "https://api-jaket.cleverapps.io/"
 
-/**
- * Get stations
- * 
- * @param columns Columns wanted in response
- * @param gasAvailables Filter stations by availbale gas
- * @param area Filter stations by an area
- * @param limit limit the number of returned stations
- * @param offset offset 
- * @returns a lists of stations
- */
-    public getStations(columns?: string[], gasAvailables?: GasType[], area?: Area, limit?: number, offset:number = 0): Promise<Station[]>{
+    /**
+     * Get stations
+     * 
+     * @param columns Columns wanted in response
+     * @param gasAvailables Filter stations by availbale gas
+     * @param area Filter stations by an area
+     * @param limit limit the number of returned stations
+     * @param offset offset 
+     * @returns a lists of stations
+     */
+    public getStations(columns?: string[], gasAvailables?: GasType[], area?: Area, limit?: number, offset:number = 0): Observable<Station[]>{
 
         let params = {
             offset : offset,
@@ -72,8 +73,7 @@ import { Station } from "../../models/station.model";
 
         })
 
-        return promise;
-
+        return from(promise);
     }
 
     
