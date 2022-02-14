@@ -6,6 +6,7 @@ import { ThemeProvider } from '@mui/system';
 import StationDetails from './pages/stationDetails/StationDetails';
 import stations from './mock-data/stations';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import HomeView from './pages/homeView/homeView';
 
 require('react-leaflet-markercluster/dist/styles.min.css');
 
@@ -33,7 +34,8 @@ class App extends React.Component<{},{}> {
         <ThemeProvider theme={this.theme}>
           <div className="App">
             <Routes>
-                <Route path="/" element={<MainView ></MainView>} />
+                <Route path="/" element={<HomeView></HomeView>} />
+                <Route path="/home" element={<MainView></MainView>} />
                 <Route path="/stationDetails" element={ <StationDetails station={stations[0]}></StationDetails>}></Route>
             </Routes>
           </div>

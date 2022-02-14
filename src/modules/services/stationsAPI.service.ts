@@ -34,9 +34,24 @@ import { from, Observable } from "rxjs";
         };
         const promise : Promise<Station[]> = new Promise<Station[]>((resolve, reject)=>{
 
-            axios.get(this.DEV_URL+'stations', {
+            let url = this.DEV_URL+'stations';
+            url += '?offset='+offset;
+            if (limit) url += '&limit='+limit;
+            columns?.forEach((column) => {
+                url += '&columns[]='+column;
+            })
+            gasAvailables?.forEach((gas) => {
+                url += '&gasAvailables[]='+gas;
+            })
+            if (area) {
+                url += '&filters[area][coordinate][latitude]='+area.coordinate[0];
+                url += '&filters[area][coordinate][longitude]='+area.coordinate[1];
+                url += '&filters[area][radius]='+area.radius*1000;
+            }
+
+            axios.get(url, {
                 headers: { 'content-type': 'application/json' },
-                params: params
+                // params: params
             }).then((response)=>{
                 const result = response.data.data;
                 let stations : Station[] = [];

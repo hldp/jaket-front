@@ -72,8 +72,8 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
         <Box component={Grid} item xs={12}>
           <AppBarCustom></AppBarCustom>
         </Box>
-        <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-container'>
-          <Search centerOnPositionTriggered={this.centerOnPositionTriggered}></Search>
+        <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-box'>
+          <Search centerOnPositionTriggered={this.centerOnPositionTriggered} isOnFirstPage={false} ></Search>
         </Box>
         <Box component={Grid} item xs={12} className='map-list-container'>
           <ButtonGroup variant="contained" className='button-group' aria-label="outlined primary button group">

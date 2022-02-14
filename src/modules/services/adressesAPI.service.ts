@@ -32,6 +32,24 @@ import { Adress } from "../../models/adress.model";
 
     }
 
+    public getAddressFromPosition(position: number[]): Promise<string>{
+
+        const promise : Promise<string> = new Promise<string>((resolve, reject)=>{
+
+            axios.get(`https://api-adresse.data.gouv.fr/reverse/?lat=${position[0]}&lon=${position[1]}`).then((response)=>{
+                const adresses = response.data.features;
+                if (adresses.length) resolve(adresses[0].properties.label);
+                else resolve('');
+            }).catch((error)=>{
+                reject(error);
+            })
+
+        })
+
+        return promise;
+
+    }
+
  }
 
  export default AdressesApi;

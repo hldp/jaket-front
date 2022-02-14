@@ -9,6 +9,8 @@ import MapService from "./Map.service";
 import { Adress } from "../../models/adress.model";
 import StationsApi from "../services/stationsAPI.service";
 import { Subscription } from "rxjs";
+import { connect } from "react-redux";
+import { Area } from "../../models/area.model";
 
 // Props, state
 class Map extends React.Component<{ 
@@ -16,6 +18,8 @@ class Map extends React.Component<{
     radius?: number,
     height: string,
     enableStationPopup?: boolean
+    stationFilter: any,
+    dispatch: any
  }, { geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, clusters: Array<Array<MarkerObject>>, radius: L.Circle | null }> {
 
     public map: L.Map | null;
@@ -47,7 +51,7 @@ class Map extends React.Component<{
         if (this.stations_request) this.stations_request.unsubscribe();
     }
 
-    componentDidUpdate(previousProps: { stations: Station[]; centerOn: Adress; radius: number, height: string }, previousState: any){
+    componentDidUpdate(previousProps: any, previousState: any){
         if (this.props.centerOn != null && this.map) {
             if (this.props.centerOn.label === 'position') {
                 this.subscribeToGeolocation(true);
@@ -56,6 +60,9 @@ class Map extends React.Component<{
                 this.mapCenter = [this.props.centerOn.latitude, this.props.centerOn.longitude];
                 this.map.flyTo(this.mapCenter, 13, { animate: false });
             }
+        }
+        if (previousProps.stationFilter !== this.props.stationFilter) {
+            this.loadStations();
         }
         // if (previousProps.radius !== this.props.radius) {
         //     this.updateRadius();
@@ -73,9 +80,25 @@ class Map extends React.Component<{
     }
 
     private loadStations() {
-        this.stations_request = this.stationsApi.getStations(["position"]).subscribe((stations: Station[]) => {
-            this.displayStations(stations);
-        })
+        console.log('loadStations')
+        let selectedGas = this.props.stationFilter.selectedGas;
+        let area;
+        console.log(this.props.stationFilter.selectedCity)
+        if (this.props.stationFilter.selectedCity != null) {
+            area = {
+                radius: this.props.stationFilter.radius,
+                coordinate: [this.props.stationFilter.selectedCity.latitude, this.props.stationFilter.selectedCity.longitude]
+            }
+        }
+        console.log(area)
+        this.stations_request = this.stationsApi.getStations(
+                ["position"],
+                selectedGas,
+                area
+            ).subscribe((stations: Station[]) => {
+                console.log('loadStations after request')
+                this.displayStations(stations);
+            });
     }
 
     /**
@@ -203,6 +226,7 @@ class Map extends React.Component<{
      * @returns 
      */
     public renderClusters() {
+        console.log('renderClusters : '+this.state.clusters.length)
         let clusters: JSX.Element[] = [];
 
         this.state.clusters.forEach((cluster: MarkerObject[], idx) => {
@@ -249,4 +273,9 @@ class Map extends React.Component<{
 
 }
 
-export default Map;
+const mapStateToProps = (state: any) => {
+    return {
+      stationFilter: state.stationFilter
+    }
+}
+export default connect(mapStateToProps)(Map);
