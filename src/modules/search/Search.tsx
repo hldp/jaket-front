@@ -11,7 +11,6 @@ import { connect } from "react-redux";
 import { updateRadius, updateSelectedCity, updateSelectedGas } from "../../store/slices/stationFilter";
 
 class Search extends React.Component<{
-    centerOnPositionTriggered?: () => void,
     stationFilter:any,
     dispatch:any,
     isOnFirstPage: boolean
@@ -143,11 +142,7 @@ class Search extends React.Component<{
      * Method trigger when user click on GPS button
      */
     public handleGpsClick() {
-        if (this.props.isOnFirstPage) {
-            this.updateCityWithUserPosition();
-        } else {
-            if (this.props.centerOnPositionTriggered) this.props.centerOnPositionTriggered();
-        }
+        this.updateCityWithUserPosition();
     }
 
     /**

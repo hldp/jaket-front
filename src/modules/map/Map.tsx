@@ -39,11 +39,10 @@ class Map extends React.Component<{
             clusters: [],
             radius: null
         };
+        this.mapCreated = this.mapCreated.bind(this);
     }
 
     componentDidMount() {
-        let panToUserPosition: boolean = this.props.centerOn ? false : true;
-        this.subscribeToGeolocation(panToUserPosition);
         this.loadStations();
     }
 
@@ -62,41 +61,68 @@ class Map extends React.Component<{
             }
         }
         if (previousProps.stationFilter !== this.props.stationFilter) {
+            this.updateRadius();
             this.loadStations();
+            this.centerMap();
         }
-        // if (previousProps.radius !== this.props.radius) {
-        //     this.updateRadius();
-        // }
+    }
+
+    public mapCreated(map: any) {
+        this.map = map;
+        this.centerMap();
+    }
+
+    /**
+     * Center the map on :
+     * - the filter city if exist
+     * - else the user geolocation if available
+     * - else the default position
+     */
+    private centerMap() {
+        let panToUserPosition: boolean = true;
+
+        if (this.props.stationFilter.selectedCity == null) {
+            panToUserPosition = this.props.centerOn ? false : true;
+        } else {
+            panToUserPosition = false;
+            this.map?.flyTo(
+                [
+                    this.props.stationFilter.selectedCity.latitude, 
+                    this.props.stationFilter.selectedCity.longitude
+                ],
+                Math.round(Math.abs(Math.pow(this.props.stationFilter.radius,1/8.5) - 12)), 
+                {animate: false}
+            );
+        }
+        this.subscribeToGeolocation(panToUserPosition);
     }
 
     /**
      * Update radius circle on the map
      */
     private updateRadius(): void {
-        if (this.props.radius) {
-            this.setState({ radius: L.circle(this.mapCenter, this.props.radius*1000)})
-            setTimeout(() => this.setState({ radius: null }), 2000);
-        }
+        this.setState({ radius: L.circle([
+            this.props.stationFilter.selectedCity.latitude, 
+            this.props.stationFilter.selectedCity.longitude
+        ], this.props.stationFilter.radius*1000)})
+        setTimeout(() => this.setState({ radius: null }), 2000);
     }
 
     private loadStations() {
-        console.log('loadStations')
+        this.setState({ clusters: [] });
         let selectedGas = this.props.stationFilter.selectedGas;
         let area;
-        console.log(this.props.stationFilter.selectedCity)
         if (this.props.stationFilter.selectedCity != null) {
             area = {
                 radius: this.props.stationFilter.radius,
                 coordinate: [this.props.stationFilter.selectedCity.latitude, this.props.stationFilter.selectedCity.longitude]
             }
         }
-        console.log(area)
         this.stations_request = this.stationsApi.getStations(
                 ["position"],
                 selectedGas,
                 area
             ).subscribe((stations: Station[]) => {
-                console.log('loadStations after request')
                 this.displayStations(stations);
             });
     }
@@ -226,7 +252,6 @@ class Map extends React.Component<{
      * @returns 
      */
     public renderClusters() {
-        console.log('renderClusters : '+this.state.clusters.length)
         let clusters: JSX.Element[] = [];
 
         this.state.clusters.forEach((cluster: MarkerObject[], idx) => {
@@ -250,7 +275,7 @@ class Map extends React.Component<{
             <div className="map-container" data-testid="map-container">
                 <MapContainer center={[46.227638, 2.213749]} style={{ height: this.props.height }}
                               zoom={6} scrollWheelZoom={true} className="map" trackResize={false} doubleClickZoom={true} 
-                              zoomControl={true} whenCreated={(map) => { this.map = map }}>
+                              zoomControl={true} whenCreated={this.mapCreated}>
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png?lang=FR"

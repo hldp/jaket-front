@@ -30,7 +30,6 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
     this.updateCity = this.updateCity.bind(this);
     this.buttonGroupMapClick = this.buttonGroupMapClick.bind(this);
     this.buttonGroupListClick = this.buttonGroupListClick.bind(this);
-    this.centerOnPositionTriggered = this.centerOnPositionTriggered.bind(this);
   }
 
   public updateRadius(radius:number): void{
@@ -54,17 +53,6 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
     this.setState({ displayedElement: 'list' })
   }
 
-  /**
-   * Center the map on the user geolocation
-   */
-  public centerOnPositionTriggered() {
-    this.setState({ centerMapOn: {
-      latitude: 0,
-      longitude: 0,
-      label: 'position'
-    }});
-  }
-
   render() {
     return (
 
@@ -73,7 +61,7 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
           <AppBarCustom></AppBarCustom>
         </Box>
         <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-box'>
-          <Search centerOnPositionTriggered={this.centerOnPositionTriggered} isOnFirstPage={false} ></Search>
+          <Search isOnFirstPage={false} ></Search>
         </Box>
         <Box component={Grid} item xs={12} className='map-list-container'>
           <ButtonGroup variant="contained" className='button-group' aria-label="outlined primary button group">
