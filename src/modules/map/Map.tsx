@@ -10,7 +10,7 @@ import { Adress } from "../../models/adress.model";
 import StationsApi from "../services/stationsAPI.service";
 import { Subscription } from "rxjs";
 import { connect } from "react-redux";
-import { Area } from "../../models/area.model";
+import { CircularProgress } from "@mui/material";
 
 // Props, state
 class Map extends React.Component<{ 
@@ -20,7 +20,11 @@ class Map extends React.Component<{
     enableStationPopup?: boolean
     stationFilter: any,
     dispatch: any
- }, { geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, clusters: Array<Array<MarkerObject>>, radius: L.Circle | null }> {
+ }, { 
+     geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, 
+     clusters: Array<Array<MarkerObject>>, 
+     radius: L.Circle | null,
+     currentPopupStation: Station | null}> {
 
     public map: L.Map | null;
 
@@ -37,7 +41,8 @@ class Map extends React.Component<{
         this.state = {
             geolocation: null,
             clusters: [],
-            radius: null
+            radius: null,
+            currentPopupStation: null
         };
         this.mapCreated = this.mapCreated.bind(this);
     }
@@ -67,6 +72,10 @@ class Map extends React.Component<{
         }
     }
 
+    /**
+     * Called when the map is loaded
+     * @param map 
+     */
     public mapCreated(map: any) {
         this.map = map;
         this.centerMap();
@@ -108,6 +117,9 @@ class Map extends React.Component<{
         setTimeout(() => this.setState({ radius: null }), 2000);
     }
 
+    /**
+     * Get the stations from the API
+     */
     private loadStations() {
         this.setState({ clusters: [] });
         let selectedGas = this.props.stationFilter.selectedGas;
@@ -200,6 +212,10 @@ class Map extends React.Component<{
         return <Marker key={`marker-${id}`} position={marker.position} icon={marker.icon} eventHandlers={{
             
             click: (e) => { 
+                this.setState({ currentPopupStation: null });
+                this.stationsApi.getStation(marker.id).subscribe((station) => {
+                    this.setState({ currentPopupStation: station });
+                });
                 if(this.props.enableStationPopup === undefined || this.props.enableStationPopup === true){
                     //auto center marker on click
                     let map_height = 600;
@@ -225,7 +241,11 @@ class Map extends React.Component<{
             {
                 (marker.popup && this.props.enableStationPopup) ?
                 <Popup autoPan={marker.popup.autoPan} minWidth={marker.popup.minWidth} maxWidth={marker.popup.maxWidth} maxHeight={marker.popup.maxHeight}>
-                    <div dangerouslySetInnerHTML={{__html: marker.popup.content}} />
+                    {this.state.currentPopupStation != null ? 
+                        
+                        this.mapService.getStationPopup(this.state.currentPopupStation)
+                        
+                        : <CircularProgress />}
                 </Popup> 
                 : ''
             }
