@@ -96,7 +96,7 @@ import { from, Observable } from "rxjs";
 
         if (api_station.prices) {
             api_station.prices.forEach((price_item: any) => {
-                prices.push(new Price(price_item.gaz_id, price_item.gas_name, price_item.last_update, price_item.price));
+                prices.push(new Price(price_item.gas_id, price_item.gas_name, price_item.last_update, price_item.price));
             });
         }
         if (api_station.schedules) {

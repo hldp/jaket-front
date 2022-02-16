@@ -1,6 +1,9 @@
 .map {
     margin: 0px 20px 20px 20px;
 }
+.map-container {
+    position: relative;
+}
 
 /* Markers */
 .marker-circle {

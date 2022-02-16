@@ -14,8 +14,7 @@ import { CircularProgress } from "@mui/material";
 
 // Props, state
 class Map extends React.Component<{ 
-    centerOn?: Adress | null,
-    radius?: number,
+    centerOn?: Station | null,
     height: string,
     enableStationPopup?: boolean
     stationFilter: any,
@@ -24,7 +23,8 @@ class Map extends React.Component<{
      geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, 
      clusters: Array<Array<MarkerObject>>, 
      radius: L.Circle | null,
-     currentPopupStation: Station | null}> {
+     currentPopupStation: Station | null,
+     isLoading: boolean}> {
 
     public map: L.Map | null;
 
@@ -42,7 +42,8 @@ class Map extends React.Component<{
             geolocation: null,
             clusters: [],
             radius: null,
-            currentPopupStation: null
+            currentPopupStation: null,
+            isLoading: false
         };
         this.mapCreated = this.mapCreated.bind(this);
     }
@@ -56,14 +57,15 @@ class Map extends React.Component<{
     }
 
     componentDidUpdate(previousProps: any, previousState: any){
-        if (this.props.centerOn != null && this.map) {
-            if (this.props.centerOn.label === 'position') {
-                this.subscribeToGeolocation(true);
+        if (this.props.centerOn != null && previousProps.centerOn !== this.props.centerOn && this.map) {
+            if (this.stations_request) { 
+                this.stations_request.unsubscribe();
+                delete this.stations_request;
             }
-            else {
-                this.mapCenter = [this.props.centerOn.latitude, this.props.centerOn.longitude];
-                this.map.flyTo(this.mapCenter, 13, { animate: false });
-            }
+            this.mapCenter = [this.props.centerOn.latitude, this.props.centerOn.longitude];
+            this.map.flyTo(this.mapCenter, 13, { animate: false });
+            this.setState({ clusters: [] });
+            this.displayStations([this.props.centerOn]);
         }
         if (previousProps.stationFilter !== this.props.stationFilter) {
             this.updateRadius();
@@ -121,7 +123,7 @@ class Map extends React.Component<{
      * Get the stations from the API
      */
     private loadStations() {
-        this.setState({ clusters: [] });
+        this.setState({ clusters: [], isLoading: true });
         let selectedGas = this.props.stationFilter.selectedGas;
         let area;
         if (this.props.stationFilter.selectedCity != null) {
@@ -136,6 +138,7 @@ class Map extends React.Component<{
                 area
             ).subscribe((stations: Station[]) => {
                 this.displayStations(stations);
+                delete this.stations_request;
             });
     }
 
@@ -157,7 +160,7 @@ class Map extends React.Component<{
     private addCluster(cluster: MarkerObject[]) {
         const {clusters} = this.state
         clusters.push(cluster)
-        this.setState({clusters})
+        this.setState({ clusters, isLoading: false })
     }
 
     /**
@@ -312,6 +315,9 @@ class Map extends React.Component<{
                     }
                     
                 </MapContainer>
+                {(this.state.isLoading) ?
+                    <div className="loading-container"><CircularProgress style={{ height: '70px', width: '70px' }}/></div>
+                : ''}
             </div>
         );
     }

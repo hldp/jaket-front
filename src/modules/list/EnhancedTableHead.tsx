@@ -3,6 +3,7 @@ import React from "react";
 import { visuallyHidden } from '@mui/utils';
 
 export interface Data {
+  id: number;
   name: string;
   address: string;
   gas_1: number; //gazole

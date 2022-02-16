@@ -10,39 +10,17 @@ import List from '../../modules/list/List';
 import { connect } from 'react-redux';
 
 class MainView extends React.Component<{stationFilter:any, dispatch:any},{
-  radius: number, 
-  gazSelected: GasType[], 
   citySelected: Adress, 
-  displayedElement: string,
-  centerMapOn: Adress | null}> {
+  displayedElement: string}> {
 
   constructor(props: any) {
     super(props);
     this.state = {
-        radius: 10,
-        gazSelected: [],
         citySelected: new Adress(0,0,"noCity"),
-        displayedElement: 'map',
-        centerMapOn: null,
+        displayedElement: 'map'
     }
-    this.updateRadius = this.updateRadius.bind(this);
-    this.updateSelectedGaz= this.updateSelectedGaz.bind(this);
-    this.updateCity = this.updateCity.bind(this);
     this.buttonGroupMapClick = this.buttonGroupMapClick.bind(this);
     this.buttonGroupListClick = this.buttonGroupListClick.bind(this);
-  }
-
-  public updateRadius(radius:number): void{
-    this.setState({radius})
-  }
-
-  public updateSelectedGaz(gazSelected: GasType[]): void{
-    this.setState({gazSelected})
-  }
-
-  public updateCity(citySelected:Adress): void{
-    this.setState({citySelected});
-    this.setState({ centerMapOn: citySelected });
   }
 
   public buttonGroupMapClick() {
@@ -70,7 +48,7 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
           </ButtonGroup>
           {
             (this.state.displayedElement === 'map')?
-            <Map centerOn={this.state.centerMapOn} radius={this.state.radius} height='600px' enableStationPopup={true}></Map>:
+            <Map height='600px' enableStationPopup={true}></Map>:
             <List></List> 
           }
         </Box>

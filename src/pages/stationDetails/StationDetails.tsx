@@ -1,5 +1,5 @@
 import { Directions } from "@mui/icons-material";
-import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card } from "@mui/material";
+import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card, CircularProgress } from "@mui/material";
 import React from "react";
 import { Adress } from "../../models/adress.model";
 import { Station } from "../../models/station.model";
@@ -9,11 +9,16 @@ import './StationDetails.css'
 import { GasType } from "../../models/gasType.enum";
 import { GasDataPrice } from "../../models/gasDataPrice.model";
 import LineGraph from "../../modules/lineGraph/LineGraph"
+import { useParams } from "react-router-dom";
+import { Subscription } from "rxjs";
+import StationsApi from "../../modules/services/stationsAPI.service";
 
-class StationDetails extends React.Component<{station: Station},{station: Station}> {
+class StationDetails extends React.Component<{params: any},{station: Station | null}> {
 
+    private stations_request: Subscription | undefined;
+    private stationsApi: StationsApi = new StationsApi();
 
-      private dataTemp: GasDataPrice[] = [
+    private dataTemp: GasDataPrice[] = [
         { gas: GasType.DIESEL, data: [
             {date: "Lundi", price: 1.56},
             {date: "Mardi", price: 1.56},
@@ -39,10 +44,28 @@ class StationDetails extends React.Component<{station: Station},{station: Statio
     constructor(props:any){
         super(props);
         this.state = {
-            station: props.station,
+            station: null
         }
-        this.navigate = this.navigate.bind(this);
+        this.navigateToGoogleMap = this.navigateToGoogleMap.bind(this);
         this.getStationData("month");
+    }
+
+    componentDidMount() {
+        this.loadStation();
+    }
+
+    componentWillUnmount() {
+        if (this.stations_request) this.stations_request.unsubscribe();
+    }
+
+    /**
+     * Get the station from the API
+     */
+    private loadStation() {
+        this.setState({ station: null });
+        this.stations_request = this.stationsApi.getStation(this.props.params.id).subscribe((station: Station) => {
+            this.setState({ station });
+        });
     }
 
     /**
@@ -50,25 +73,26 @@ class StationDetails extends React.Component<{station: Station},{station: Statio
      * @param date 
      * @returns the date formated
      */
-    private dateToString(date:Date): string{
+    private dateToString(date: Date): string{
+        let real_date = new Date(date);
         let dateToReturn: string = "";
-        let tempDate: string[] = date.toLocaleDateString().split("/").slice(0,2);
+
+        let tempDate: string[] = real_date.toLocaleDateString().split("/").slice(0,2);
         dateToReturn = tempDate[0]+ "/" + tempDate[1];
 
-        let tempTime: string[] = date.toLocaleTimeString().split(":").slice(0,2);
+        let tempTime: string[] = real_date.toLocaleTimeString().split(":").slice(0,2);
         dateToReturn += " - " + tempTime[0]+":"+tempTime[1];
-
         return dateToReturn;
     }
 
-    private getStationAdress(): Adress{
-        console.log(this.state.station.latitude, this.state.station.longitude, this.state.station.address)
-        return new Adress(this.state.station.latitude, this.state.station.longitude, this.state.station.address);
-    }
-
-    public navigate(): void{
-        const url = "https://www.google.com/maps/dir/?api=1&destination="+this.state.station.latitude+" "+this.state.station.longitude
-        window.open(url);
+    /**
+     * Open Google Map to navigate to the station
+     */
+    public navigateToGoogleMap(): void {
+        if (this.state.station != null) {
+            const url = "https://www.google.com/maps/dir/?api=1&destination="+this.state.station.latitude+" "+this.state.station.longitude
+            window.open(url);
+        }
     }
 
     private getStationData(period: string):void{
@@ -81,11 +105,17 @@ class StationDetails extends React.Component<{station: Station},{station: Statio
 
             <div>
                 <AppBarCustom></AppBarCustom>
-                <h1>{this.state.station.name}      
-                <IconButton color="primary" size="large" onClick={this.navigate}>
-                  <Directions/>
-                </IconButton></h1>
-                <Card className="infoCard">
+                {
+                    (this.state.station != null) ? 
+                    <h1>{this.state.station.address}      
+                    <IconButton color="primary" size="large" onClick={this.navigateToGoogleMap}>
+                        <Directions/>
+                    </IconButton></h1>
+                    : <CircularProgress style={{ height: '70px', width: '70px' }}/>
+                }
+                {
+                    (this.state.station != null) ? 
+                    <Card className="infoCard">
                     <CardContent>
                     <Table size="small">
                         <TableHead>
@@ -108,9 +138,11 @@ class StationDetails extends React.Component<{station: Station},{station: Statio
                         </TableBody>
                     </Table>
                     </CardContent>
-                </Card>
+                    </Card>
+                    : <CircularProgress style={{ height: '70px', width: '70px' }}/>
+                }
                 {/* // TODO display only one station on the map */}
-                <Map height={"300px"} centerOn={this.getStationAdress()} enableStationPopup={false}></Map>
+                <Map height={"300px"} centerOn={this.state.station} enableStationPopup={false}></Map>
                 <Card className="infoCard">
                     <LineGraph gasData={this.dataTemp}></LineGraph>
                 </Card>
@@ -120,4 +152,9 @@ class StationDetails extends React.Component<{station: Station},{station: Statio
 
 }
 
-export default StationDetails;
+function WithParams(props: any) {
+    let params = useParams();
+    return <StationDetails {...props} params={params} />
+}
+
+export default WithParams;

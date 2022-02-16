@@ -1,16 +1,26 @@
 import React from "react";
 import './List.css';
 import { Station } from "../../models/station.model";
-import { TableContainer, Paper, Table, TableRow, TableCell, TableBody, TablePagination } from "@mui/material";
+import { TableContainer, Paper, Table, TableRow, TableCell, TableBody, TablePagination, CircularProgress } from "@mui/material";
 import EnhancedTableHead, { Data, Order } from "./EnhancedTableHead";
 import MapService from "../map/Map.service";
 import { ListService } from "./List.service";
 import { connect } from "react-redux";
 import StationsApi from "../services/stationsAPI.service";
 import { Subscription } from "rxjs";
+import { useNavigate } from "react-router-dom";
 
 // Props, state
-class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof Data, page: number, rowsPerPage: number }> {
+class List extends React.Component<{
+    stationFilter: any,
+    dispatch: any,
+    navigate: any
+}, { rows: any,
+     order: Order,
+     orderBy: keyof Data,
+     page: number,
+     rowsPerPage: number,
+     isLoading: boolean }> {
 
     private mapService: MapService;
     private listService: ListService;
@@ -26,14 +36,16 @@ class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof
 
         // Bind functions
         this.handleRequestSort = this.handleRequestSort.bind(this);
-
+        this.onStationClick = this.onStationClick.bind(this);
+        
         // Init state
         this.state = { 
             rows: [],
             order: 'asc',
             orderBy: 'name',
             page: 0,
-            rowsPerPage: 5
+            rowsPerPage: 5,
+            isLoading: false
         };
     }
 
@@ -45,10 +57,65 @@ class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof
         if (this.stations_request) this.stations_request.unsubscribe();
     }
 
+    componentDidUpdate(previousProps: any, previousState: any){
+        if (previousProps.stationFilter !== this.props.stationFilter) {
+            this.loadStations();
+        }
+    }
+
+    /**
+     * Get the stations from the API
+     */
     private loadStations() {
-        this.stations_request = this.stationsApi.getStations(["position"]).subscribe((stations: Station[]) => {
-            this.setState({ rows: this.getStationsRows(stations) })
-        })
+        this.setState({ rows: [], isLoading: true });
+        let selectedGas = this.props.stationFilter.selectedGas;
+        let area;
+        if (this.props.stationFilter.selectedCity != null) {
+            area = {
+                radius: this.props.stationFilter.radius,
+                coordinate: [this.props.stationFilter.selectedCity.latitude, this.props.stationFilter.selectedCity.longitude]
+            }
+        }
+        this.stations_request = this.stationsApi.getStations(
+            ["position"],
+            selectedGas,
+            area
+        ).subscribe((stations: Station[]) => {
+            this.setState({ rows: this.getStationsRows(stations) });
+            this.updateDisplayedStations(this.state.page, this.state.rowsPerPage);
+        });
+    }
+
+    /**
+     * Get the stations details for current displayed stations on the list
+     * @param page 
+     * @param rowsPerPage 
+     */
+    private updateDisplayedStations(page: number, rowsPerPage: number) {
+        this.setState({ isLoading: true });
+        let selectedGas = this.props.stationFilter.selectedGas;
+        let area;
+        if (this.props.stationFilter.selectedCity != null) {
+            area = {
+                radius: this.props.stationFilter.radius,
+                coordinate: [this.props.stationFilter.selectedCity.latitude, this.props.stationFilter.selectedCity.longitude]
+            }
+        }
+
+        let offset = page*rowsPerPage;
+        this.stations_request = this.stationsApi.getStations(
+            [],
+            selectedGas,
+            area,
+            rowsPerPage,
+            offset
+        ).subscribe((stations: Station[]) => {
+            let rows = this.state.rows;
+            for(let i = 0; i < rowsPerPage; i++) {
+                if (i < stations.length) rows[i+offset] = this.getStationsRows([stations[i]])[0]
+            }
+            this.setState({ rows: rows, isLoading: false });
+        });
     }
 
     /**
@@ -64,6 +131,7 @@ class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof
             station.prices.forEach(price => gas[price.gas_id] = price.price);
             let is_open = this.mapService.isStationOpened(station);
             let data: Data = {
+                id: station.id,
                 name: station.name,
                 address: station.address,
                 gas_1: gas[1],
@@ -119,6 +187,7 @@ class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof
      */
     private handleChangePage = (event: unknown, newPage: number) => {
         this.setState({ page: newPage });
+        this.updateDisplayedStations(newPage, this.state.rowsPerPage);
     };
     
     /**
@@ -128,7 +197,16 @@ class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof
     private handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({ rowsPerPage: parseInt(event.target.value, 10) });
         this.setState({ page: 0 });
+        this.updateDisplayedStations(this.state.page, parseInt(event.target.value, 10));
     };
+
+    /**
+     * Called when a station is clicked on the list
+     * @param id
+     */
+    public onStationClick(id: number) {
+        this.props.navigate(`/stationDetails/${id}`);
+    }
       
     /**
      * Render the component
@@ -153,7 +231,7 @@ class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof
                             const labelId = `enhanced-table-checkbox-${index}`;
         
                             return (
-                            <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                            <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={() => this.onStationClick(row.id)}>
                                 <TableCell component="th" id={labelId} scope="row" padding="none">
                                     {row.name}
                                 </TableCell>
@@ -186,6 +264,10 @@ class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof
                     onRowsPerPageChange={this.handleChangeRowsPerPage}
                 />
                 </Paper>
+
+                {(this.state.isLoading) ?
+                    <div className="loading-container"><CircularProgress style={{ height: '70px', width: '70px' }}/></div>
+                : ''}
             </div>
             );
     }
@@ -193,4 +275,14 @@ class List extends React.Component<{}, { rows: any, order: Order, orderBy: keyof
 
 }
 
-export default List;
+function WithNavigate(props: any) {
+    let navigate = useNavigate();
+    return <List {...props} navigate={navigate} />
+}
+
+const mapStateToProps = (state: any) => {
+    return {
+      stationFilter: state.stationFilter
+    }
+}
+export default connect(mapStateToProps)(WithNavigate);

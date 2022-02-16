@@ -36,7 +36,7 @@ class App extends React.Component<{},{}> {
             <Routes>
                 <Route path="/" element={<HomeView></HomeView>} />
                 <Route path="/home" element={<MainView></MainView>} />
-                <Route path="/stationDetails" element={ <StationDetails station={stations[0]}></StationDetails>}></Route>
+                <Route path="/stationDetails/:id" element={ <StationDetails station={stations[0]}></StationDetails>}></Route>
             </Routes>
           </div>
         </ThemeProvider>
