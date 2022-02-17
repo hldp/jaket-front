@@ -1,9 +1,10 @@
-import { AccountCircle, Logout, Settings } from "@mui/icons-material";
-import { Box, Toolbar, IconButton, Typography, AppBar, Tooltip, Avatar, Menu, MenuItem, Divider, ListItemIcon, Dialog, Slide } from "@mui/material";
+import { AccountCircle, Logout, Settings, LocalGasStation } from "@mui/icons-material";
+import { Box, Toolbar, IconButton, Typography, AppBar, Tooltip, Avatar, Menu, MenuItem, Divider, ListItemIcon, Dialog, Slide, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, FormControl, InputLabel, Select, Snackbar, Alert, AlertColor } from "@mui/material";
 import React from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import LoginForm from "../loginForm/LoginForm";
+import RefuelForm from "../refuelForm/refuelForm";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -14,7 +15,12 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
-class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean }>{
+class AppBarCustom extends React.Component<{
+}, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean, dialogGasOpen: boolean, snackbarOpen: boolean }>{
+
+
+    public snackbarSuccess: any;
+    public snackbarMessage: string = "";
 
     constructor(props : any){
         super(props);
@@ -24,13 +30,18 @@ class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement, d
         this.handleOnAcccountMenuClose = this.handleOnAcccountMenuClose.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this);
         this.updateLoginStatus = this.updateLoginStatus.bind(this);
+        this.handleGasFuelPopup = this.handleGasFuelPopup.bind(this);   
         this.logout = this.logout.bind(this);
+        this.openSnackbar = this.openSnackbar.bind(this);
+        this.closeSnackbar = this.closeSnackbar.bind(this);
         
         // Init state
         this.state = {
             anchorEl: null,
             dialogOpen: false,
-            userLogged: false
+            userLogged: false,
+            dialogGasOpen: false,
+            snackbarOpen: false
         }
     }
 
@@ -57,6 +68,21 @@ class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement, d
     public logout() {
         this.setState({ userLogged: false })
     }
+
+    public handleGasFuelPopup(){
+        this.setState({dialogGasOpen: !this.state.dialogGasOpen})
+    }
+
+    public openSnackbar(success: boolean, message: string): void{
+        this.snackbarMessage = message;
+        success ? this.snackbarSuccess = "success" : this.snackbarSuccess = "error";
+        this.setState({snackbarOpen:true});
+    }
+
+    public closeSnackbar(e:any):void{
+        this.setState({snackbarOpen:false});
+    }
+
 
     public renderMenuLogged() {
         return(
@@ -105,6 +131,25 @@ class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement, d
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: 'flex' }}>
+
+                    {(this.state.userLogged) ? 
+                        <Tooltip title="Add new gas fuel">
+                            <IconButton 
+                            size="large"
+                            edge="end"
+                            aria-label="Adding fuel"
+                            aria-controls='adding-fuel-button'
+                            aria-haspopup="true"
+                            onClick={this.handleGasFuelPopup}
+                            color="inherit"
+                            sx={{ color: 'black'}}
+                            >
+                                <LocalGasStation/>
+                            </IconButton>
+                        </Tooltip>
+                    : ''}
+                    {(this.state.dialogGasOpen) ? <RefuelForm onClose={this.handleGasFuelPopup} openSnackbar={this.openSnackbar}></RefuelForm> : ''}
+                    
                         <Tooltip title="Account settings">
                             <IconButton
                                 size="large"
@@ -145,6 +190,8 @@ class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement, d
                 </Toolbar>
             </AppBar>
 
+
+
             <Dialog fullScreen open={this.state.dialogOpen} onClose={this.handleDialogClose} TransitionComponent={Transition}>
                 <AppBar sx={{ position: 'relative' }}>
                 <Toolbar>
@@ -156,7 +203,22 @@ class AppBarCustom extends React.Component<{}, { anchorEl: null | HTMLElement, d
                 </AppBar>
                 <LoginForm updateLoginStatus={this.updateLoginStatus}></LoginForm>
             </Dialog>
+
+            <Snackbar
+            open={this.state.snackbarOpen}
+            autoHideDuration={3000}
+            onClose={this.closeSnackbar}
+            anchorOrigin={{horizontal: 'center', vertical: 'bottom'}}
+            >
+            <Alert  
+            severity={this.snackbarSuccess}>
+            {this.snackbarMessage}
+            </Alert>
+            </Snackbar>
+            
         </Box>
+
+        
         );
     }
 
