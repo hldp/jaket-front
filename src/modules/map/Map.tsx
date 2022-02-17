@@ -6,75 +6,143 @@ import { MarkerObject } from "../../models/marker-object.model";
 import { Station } from "../../models/station.model";
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import MapService from "./Map.service";
-import { Adress } from "../../models/adress.model";
+import StationsApi from "../services/stationsAPI.service";
+import { Subscription } from "rxjs";
+import { connect } from "react-redux";
+import { CircularProgress } from "@mui/material";
 
 // Props, state
 class Map extends React.Component<{ 
-    stations: Array<Station>,
-    centerOn?: Adress | null,
-    radius?: number,
+    centerOn?: Station | null,
     height: string,
     enableStationPopup?: boolean
- }, { geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, clusters: Array<Array<MarkerObject>>, radius: L.Circle | null }> {
+    stationFilter: any,
+    dispatch: any
+ }, { 
+     geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, 
+     clusters: Array<Array<MarkerObject>>, 
+     radius: L.Circle | null,
+     currentPopupStation: Station | null,
+     isLoading: boolean}> {
 
     public map: L.Map | null;
 
     private mapService: MapService;
-    private mapCenter: LatLngExpression;
+    private stationsApi: StationsApi = new StationsApi();
+    private stations_request: Subscription | undefined;
 
     constructor(props: any) {
         super(props);
         this.map = null;
-        this.mapCenter = [46.227638, 2.213749];
         this.mapService = new MapService();
         this.state = {
             geolocation: null,
             clusters: [],
-            radius: null
+            radius: null,
+            currentPopupStation: null,
+            isLoading: false
         };
+        this.mapCreated = this.mapCreated.bind(this);
     }
 
     componentDidMount() {
-        let panToUserPosition: boolean = this.props.centerOn ? false : true;
-        this.subscribeToGeolocation(panToUserPosition);
-        this.displayStations();
+        this.loadStations();
     }
 
-    componentDidUpdate(previousProps: { stations: Station[]; centerOn: Adress; radius: number, height: string }, previousState: any){
-        if (previousProps.stations !== this.props.stations) {
-            this.displayStations();
-        }
-        if (this.props.centerOn != null && this.map) {
-            if (this.props.centerOn.label === 'position') {
-                this.subscribeToGeolocation(true);
+    componentWillUnmount() {
+        if (this.stations_request) this.stations_request.unsubscribe();
+    }
+
+    componentDidUpdate(previousProps: any, previousState: any){
+        if (this.props.centerOn != null && previousProps.centerOn !== this.props.centerOn && this.map) {
+            if (this.stations_request) { 
+                this.stations_request.unsubscribe();
+                delete this.stations_request;
             }
-            else {
-                this.mapCenter = [this.props.centerOn.latitude, this.props.centerOn.longitude];
-                this.map.flyTo(this.mapCenter, 13, { animate: false });
-            }
+            this.map.flyTo([this.props.centerOn.latitude, this.props.centerOn.longitude], 13, { animate: false });
+            this.setState({ clusters: [[this.mapService.getStationMarker(this.props.centerOn)]], isLoading: false });
         }
-        if (previousProps.radius !== this.props.radius) {
+        if (previousProps.stationFilter !== this.props.stationFilter) {
             this.updateRadius();
+            this.loadStations();
+            this.centerMap();
         }
+    }
+
+    /**
+     * Called when the map is loaded
+     * @param map 
+     */
+    public mapCreated(map: any) {
+        this.map = map;
+        if (this.props.centerOn == null) this.centerMap();
+    }
+
+    /**
+     * Center the map on :
+     * - the filter city if exist
+     * - else the user geolocation if available
+     * - else the default position
+     */
+    private centerMap() {
+        let panToUserPosition: boolean = true;
+
+        if (this.props.stationFilter.selectedCity == null) {
+            panToUserPosition = this.props.centerOn ? false : true;
+        } else {
+            panToUserPosition = false;
+            this.map?.flyTo(
+                [
+                    this.props.stationFilter.selectedCity.latitude, 
+                    this.props.stationFilter.selectedCity.longitude
+                ],
+                Math.round(Math.abs(Math.pow(this.props.stationFilter.radius,1/8.5) - 12)), 
+                {animate: false}
+            );
+        }
+        this.subscribeToGeolocation(panToUserPosition);
     }
 
     /**
      * Update radius circle on the map
      */
     private updateRadius(): void {
-        if (this.props.radius) {
-            this.setState({ radius: L.circle(this.mapCenter, this.props.radius*1000)})
-            setTimeout(() => this.setState({ radius: null }), 2000);
+        this.setState({ radius: L.circle([
+            this.props.stationFilter.selectedCity.latitude, 
+            this.props.stationFilter.selectedCity.longitude
+        ], this.props.stationFilter.radius*1000)})
+        setTimeout(() => this.setState({ radius: null }), 2000);
+    }
+
+    /**
+     * Get the stations from the API
+     */
+    private loadStations() {
+        this.setState({ clusters: [], isLoading: true });
+        let selectedGas = this.props.stationFilter.selectedGas;
+        let area;
+        if (this.props.stationFilter.selectedCity != null) {
+            area = {
+                radius: this.props.stationFilter.radius,
+                coordinate: [this.props.stationFilter.selectedCity.latitude, this.props.stationFilter.selectedCity.longitude]
+            }
         }
+        this.stations_request = this.stationsApi.getStations(
+                ["position"],
+                selectedGas,
+                area
+            ).subscribe((stations: Station[]) => {
+                this.displayStations(stations);
+                delete this.stations_request;
+            });
     }
 
     /**
      * Display all stations received on the map
      */
-    private displayStations() {
+    private displayStations(stations: Station[]) {
         let cluster: MarkerObject[] = [];
-        this.props.stations.forEach((station: Station) => {
-
+        stations.forEach((station: Station) => {
             cluster.push(this.mapService.getStationMarker(station));
         });
         this.addCluster(cluster);
@@ -87,7 +155,7 @@ class Map extends React.Component<{
     private addCluster(cluster: MarkerObject[]) {
         const {clusters} = this.state
         clusters.push(cluster)
-        this.setState({clusters})
+        this.setState({ clusters, isLoading: false })
     }
 
     /**
@@ -116,15 +184,13 @@ class Map extends React.Component<{
                 this.setState({ geolocation: { marker: marker, circle: circle }})
 
                 if (panToUserPosition && this.map) {
-                    this.mapCenter = [latitude, longitude];
-                    this.map.flyTo(this.mapCenter, 17, {
+                    this.map.flyTo([latitude, longitude], 17, {
                         animate: false, 
                     });
                 }
             }, () => {
                 if (this.map) {
-                    this.mapCenter = [43.552550, 7.022886];
-                    this.map.flyTo(this.mapCenter, this.map.getZoom(), {
+                    this.map.flyTo([43.552550, 7.022886], this.map.getZoom(), {
                         animate: false,
                     });
                 }
@@ -142,6 +208,10 @@ class Map extends React.Component<{
         return <Marker key={`marker-${id}`} position={marker.position} icon={marker.icon} eventHandlers={{
             
             click: (e) => { 
+                this.setState({ currentPopupStation: null });
+                this.stationsApi.getStation(marker.id).subscribe((station) => {
+                    this.setState({ currentPopupStation: station });
+                });
                 if(this.props.enableStationPopup === undefined || this.props.enableStationPopup === true){
                     //auto center marker on click
                     let map_height = 600;
@@ -155,8 +225,7 @@ class Map extends React.Component<{
                         }
                     }
                     else {
-                        this.mapCenter = e.target.getLatLng();
-                        this.map?.flyTo(this.mapCenter, 17, {animate: false});
+                        this.map?.flyTo(e.target.getLatLng(), 17, {animate: false});
                     }
 
                     e.target.openPopup();
@@ -167,7 +236,11 @@ class Map extends React.Component<{
             {
                 (marker.popup && this.props.enableStationPopup) ?
                 <Popup autoPan={marker.popup.autoPan} minWidth={marker.popup.minWidth} maxWidth={marker.popup.maxWidth} maxHeight={marker.popup.maxHeight}>
-                    <div dangerouslySetInnerHTML={{__html: marker.popup.content}} />
+                    {this.state.currentPopupStation != null ? 
+                        
+                        this.mapService.getStationPopup(this.state.currentPopupStation)
+                        
+                        : <CircularProgress />}
                 </Popup> 
                 : ''
             }
@@ -217,7 +290,7 @@ class Map extends React.Component<{
             <div className="map-container" data-testid="map-container">
                 <MapContainer center={[46.227638, 2.213749]} style={{ height: this.props.height }}
                               zoom={6} scrollWheelZoom={true} className="map" trackResize={false} doubleClickZoom={true} 
-                              zoomControl={true} whenCreated={(map) => { this.map = map }}>
+                              zoomControl={true} whenCreated={this.mapCreated}>
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png?lang=FR"
@@ -234,10 +307,18 @@ class Map extends React.Component<{
                     }
                     
                 </MapContainer>
+                {(this.state.isLoading) ?
+                    <div className="loading-container"><CircularProgress style={{ height: '70px', width: '70px' }}/></div>
+                : ''}
             </div>
         );
     }
 
 }
 
-export default Map;
+const mapStateToProps = (state: any) => {
+    return {
+      stationFilter: state.stationFilter
+    }
+}
+export default connect(mapStateToProps)(Map);

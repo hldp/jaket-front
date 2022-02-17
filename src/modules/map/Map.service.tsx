@@ -12,38 +12,66 @@ class MapService {
 
         let markerIcon = L.divIcon({className: 'marker', html: '<i class="marker-circle company-step-'+1+'"></i><i class="marker-icon"></i>'});
 
-        let popupHtml = '<div class="infobulle" style="height:320px;">';
-        if (station.name) popupHtml += '<p style="text-align: center; font-weight: bold; font-size: 18px;">'+station.name+'</p>';
-        if (station.address) popupHtml += '<p class="marker-popup-item address-icon">'+station.address+'</p>';
-        if (station.schedules) {
-            let daySchedule = this.getCurrentDateSchedule(station.schedules);
-            if (daySchedule) {
-                let is_opened = this.isStationOpened(station)
-                popupHtml += '<p>'+
-                '<span class="'+(is_opened?'opened-text':'closed-text')+'">'+
-                (is_opened?'Open':'Close')+'</span> • '+
-                (is_opened?'Closing at':'Opening at')+' '+this.formatDate(is_opened?daySchedule.closing:daySchedule.opening)
-                +'</p>';
-            }
-        }
-        if (station.prices) {
-            station.prices.forEach((price) => {
-                popupHtml += '<p><span class="gas-name">'+price.gas_name+'</span> : '+price.price+' €</p>';
-            });
-        }
-        popupHtml += '</div>';
-
         return new MarkerObject(station.id, 
             L.latLng(station.latitude, station.longitude), 
             markerIcon, 
-            {   
-                content: popupHtml,
+            {
+                content: '',
                 autoPan : true, 
                 minWidth: 320,
                 maxWidth : 320, 
                 maxHeight : 320,
             }, true
         );
+    }
+
+    /**
+     * Get a station popup content
+     * @param station 
+     */
+    public getStationPopup(station: Station) {
+        let daySchedule = undefined;
+        if (station.schedules) {
+            daySchedule = this.getCurrentDateSchedule(station.schedules);
+        }
+        return (
+            <div className="infobulle" style={{ height: '320px'}}>
+                {(station.address) ? <p style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '18px' }}> {station.address} </p> : ''}
+                {/* {(station.address) ? <p className="marker-popup-item address-icon"> {station.address} </p> : ''} */}
+                { (station.schedules) ?
+                     (daySchedule) ? 
+
+                        <p>
+                            <span className={this.isStationOpened(station)?'opened-text':'closed-text'}>
+                                {this.isStationOpened(station)?'Open':'Close'} 
+                            </span>
+                            {this.getPopupIsOpenText(station)}
+                        </p>
+
+                    : '' : ''
+                }
+                { (station.prices) ?
+                        station.prices.map((price, i) => {
+                            return (<p key={i} ><span className="gas-name"> {price.gas_name} </span> : {price.price} €</p>)
+                        })
+                    : ''
+                }
+            </div>
+        );
+    }
+
+    /**
+     * Get the text to display opening hours on a station popup
+     * @param station
+     */
+    private getPopupIsOpenText(station: Station): string {
+        let text = ' • ';
+        const isStationOpened = this.isStationOpened(station);
+        let daySchedule = undefined;
+        if (station.schedules) daySchedule = this.getCurrentDateSchedule(station.schedules);
+        text += isStationOpened?'Closing at ':'Opening at ';
+        if (daySchedule) text += this.formatDate(isStationOpened?daySchedule.closing:daySchedule.opening)
+        return text;
     }
 
     /**

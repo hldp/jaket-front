@@ -2,42 +2,41 @@
 import { Autocomplete, Chip, CircularProgress, Grid, IconButton, Slider, Stack, TextField } from "@mui/material";
 import React from "react";
 import { Adress } from "../../models/adress.model";
-import { Station } from "../../models/station.model";
 import AdressesApi from "../services/adressesAPI.service";
 import { ChipData } from "./chipData.model";
-// import stations from '../../mock-data/stations';
 import './Search.css'
 import { GasType } from "../../models/gasType.enum";
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import StationsApi from "../services/stationsAPI.service";
 import { connect } from "react-redux";
 import { updateRadius, updateSelectedCity, updateSelectedGas } from "../../store/slices/stationFilter";
 
 class Search extends React.Component<{
-    updateStations: (stations: Station[]) => void;
-    centerOnPositionTriggered: () => void,
     stationFilter:any,
-    dispatch:any
-
-}, {adresses: Adress[], chipData:ChipData[]}>{
+    dispatch:any,
+    isOnFirstPage: boolean
+}, {adresses: Adress[], chipData:ChipData[], city_loading: boolean, city_value: Adress | null}>{
 
     public defaultRadiusValue = 10;
 
     private adressesApi: AdressesApi = new AdressesApi();
-    private stationsApi: StationsApi = new StationsApi();
     private searchTerms: String = "";
-    private loading: boolean = false;
     private gazSelected: GasType[] = [GasType.DIESEL, GasType.SP95, GasType.SP98, GasType.ETHANOL, GasType.GPL];
+    private auto_complete_timeout: NodeJS.Timeout | null = null;
 
     constructor(props : any){
         super(props);
-        this.state = {adresses: [], chipData:[
-            { key: 0, label: GasType.SP95, color: 'primary' },
-            { key: 1, label: GasType.SP98, color: 'primary' },
-            { key: 2, label: GasType.DIESEL, color: 'primary' },
-            { key: 3, label: GasType.GPL, color: 'primary' },
-            { key: 4, label: GasType.ETHANOL, color: 'primary' },
-        ]};
+        this.state = {
+            adresses: [],
+            chipData:[
+                { key: 0, label: GasType.SP95, color: 'primary' },
+                { key: 1, label: GasType.SP98, color: 'primary' },
+                { key: 2, label: GasType.DIESEL, color: 'primary' },
+                { key: 3, label: GasType.GPL, color: 'primary' },
+                { key: 4, label: GasType.ETHANOL, color: 'primary' },
+            ],
+            city_loading: false,
+            city_value: null
+        };
 
         this.props.dispatch(updateRadius(this.defaultRadiusValue));
         this.onSelectCity = this.onSelectCity.bind(this);
@@ -45,12 +44,6 @@ class Search extends React.Component<{
         this.onSelectGaz = this.onSelectGaz.bind(this);
         this.onRadiusChange = this.onRadiusChange.bind(this);
         this.handleGpsClick = this.handleGpsClick.bind(this);
-    }
-
-    componentDidMount() {
-        this.stationsApi.getStations(["position"]).then((stations) => {
-            this.props.updateStations(stations);
-        })
     }
 
     /**
@@ -70,20 +63,24 @@ class Search extends React.Component<{
      */
     onUserCityInput(e:any){
 
-        this.searchTerms = e.target.value;
+        this.setState({ city_loading: true });
 
-        if(this.searchTerms){
+        if (this.auto_complete_timeout != null) clearTimeout(this.auto_complete_timeout);
 
-            this.loading= true;
-            this.adressesApi.getAdresses(this.searchTerms).then((adresses: Adress[])=>{
-
-                this.setState({adresses : adresses});
-                this.loading = false;
-            }).catch((e)=>{
-                console.log(e);
-                this.loading = false;
-            });
-        }
+        this.auto_complete_timeout = setTimeout(() => {
+            this.searchTerms = e.target.value;
+            if(this.searchTerms) {
+                this.adressesApi.getAdresses(this.searchTerms).then((adresses: Adress[])=>{
+                    this.setState({adresses : adresses});
+                    this.setState({ city_loading: false });
+                }).catch((e)=>{
+                    console.log(e);
+                    this.setState({ city_loading: false });
+                });
+            } else {
+                this.setState({ city_loading: false });
+            }
+        }, 500);
 
     }
 
@@ -121,10 +118,31 @@ class Search extends React.Component<{
     }
 
     /**
+     * Get coordinates from user position and update redux state
+     */
+    private updateCityWithUserPosition() {
+        if (navigator.geolocation)
+        {
+            navigator.geolocation.getCurrentPosition((position) =>
+            {
+                this.setState({ city_loading: true });
+                let latitude = position.coords.latitude;
+                let longitude = position.coords.longitude;
+                this.adressesApi.getAddressFromPosition([latitude, longitude]).then((address: string) => {
+                    this.setState({ city_loading: false, city_value: new Adress(latitude, longitude, address) });
+                    this.props.dispatch(updateSelectedCity(JSON.stringify(this.state.city_value)));
+                });
+            }, () => {
+                this.setState({ city_loading: false });
+            });
+        }
+    }
+
+    /**
      * Method trigger when user click on GPS button
      */
     public handleGpsClick() {
-        this.props.centerOnPositionTriggered();
+        this.updateCityWithUserPosition();
     }
 
     /**
@@ -140,7 +158,7 @@ class Search extends React.Component<{
                         <Autocomplete
                             options={this.state.adresses}
                             onChange={this.onSelectCity}
-
+                            value={this.state.city_value}
                             sx={{ width: '100%' }}
                             renderInput={(params) => 
                             <TextField onChange={this.onUserCityInput} {...params} label="Adresse" sx={{ background: 'white'}}
@@ -148,7 +166,7 @@ class Search extends React.Component<{
                                 ...params.InputProps,
                                 endAdornment: (
                                 <React.Fragment>
-                                    {this.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {this.state.city_loading ? <CircularProgress color="inherit" size={20} /> : null}
                                     {params.InputProps.endAdornment}
                                 </React.Fragment>
                                 ),
