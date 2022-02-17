@@ -42,7 +42,7 @@ class List extends React.Component<{
         this.state = { 
             rows: [],
             order: 'asc',
-            orderBy: 'name',
+            orderBy: 'address',
             page: 0,
             rowsPerPage: 5,
             isLoading: false
@@ -132,7 +132,6 @@ class List extends React.Component<{
             let is_open = this.mapService.isStationOpened(station);
             let data: Data = {
                 id: station.id,
-                name: station.name,
                 address: station.address,
                 gas_1: gas[1],
                 gas_2: gas[2],
@@ -231,11 +230,10 @@ class List extends React.Component<{
                             const labelId = `enhanced-table-checkbox-${index}`;
         
                             return (
-                            <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={() => this.onStationClick(row.id)}>
+                            <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={() => this.onStationClick(row.id)} style={{ cursor: 'pointer' }}>
                                 <TableCell component="th" id={labelId} scope="row" padding="none">
-                                    {row.name}
+                                    {row.address}
                                 </TableCell>
-                                <TableCell align="right">{row.address}</TableCell>
                                 <TableCell align="right">{row.gas_1}</TableCell>
                                 <TableCell align="right">{row.gas_2}</TableCell>
                                 <TableCell align="right">{row.gas_3}</TableCell>
