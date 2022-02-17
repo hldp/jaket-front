@@ -32,7 +32,7 @@ import { from, Observable } from "rxjs";
                 url += '&columns[]='+column;
             })
             gasAvailables?.forEach((gas) => {
-                url += '&gasAvailables[]='+gas;
+                url += '&filters[gasAvailables][]='+gas;
             })
             if (area) {
                 url += '&filters[area][coordinate][latitude]='+area.coordinate[0];

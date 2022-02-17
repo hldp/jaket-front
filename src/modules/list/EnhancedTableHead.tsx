@@ -4,7 +4,6 @@ import { visuallyHidden } from '@mui/utils';
 
 export interface Data {
   id: number;
-  name: string;
   address: string;
   gas_1: number; //gazole
   gas_2: number; // sp95
@@ -35,15 +34,9 @@ class EnhancedTableHead extends React.Component<{
         super(props);
         this.headCells = [
             {
-              id: 'name',
+              id: 'address',
               numeric: false,
               disablePadding: true,
-              label: 'Name',
-            },
-            {
-              id: 'address',
-              numeric: true,
-              disablePadding: false,
               label: 'Address',
             },
             {
