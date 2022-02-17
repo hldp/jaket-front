@@ -6,7 +6,6 @@ import { MarkerObject } from "../../models/marker-object.model";
 import { Station } from "../../models/station.model";
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import MapService from "./Map.service";
-import { Adress } from "../../models/adress.model";
 import StationsApi from "../services/stationsAPI.service";
 import { Subscription } from "rxjs";
 import { connect } from "react-redux";
@@ -29,14 +28,12 @@ class Map extends React.Component<{
     public map: L.Map | null;
 
     private mapService: MapService;
-    private mapCenter: LatLngExpression;
     private stationsApi: StationsApi = new StationsApi();
     private stations_request: Subscription | undefined;
 
     constructor(props: any) {
         super(props);
         this.map = null;
-        this.mapCenter = [46.227638, 2.213749];
         this.mapService = new MapService();
         this.state = {
             geolocation: null,
@@ -62,10 +59,8 @@ class Map extends React.Component<{
                 this.stations_request.unsubscribe();
                 delete this.stations_request;
             }
-            this.mapCenter = [this.props.centerOn.latitude, this.props.centerOn.longitude];
-            this.map.flyTo(this.mapCenter, 13, { animate: false });
-            this.setState({ clusters: [] });
-            this.displayStations([this.props.centerOn]);
+            this.map.flyTo([this.props.centerOn.latitude, this.props.centerOn.longitude], 13, { animate: false });
+            this.setState({ clusters: [[this.mapService.getStationMarker(this.props.centerOn)]], isLoading: false });
         }
         if (previousProps.stationFilter !== this.props.stationFilter) {
             this.updateRadius();
@@ -80,7 +75,7 @@ class Map extends React.Component<{
      */
     public mapCreated(map: any) {
         this.map = map;
-        this.centerMap();
+        if (this.props.centerOn == null) this.centerMap();
     }
 
     /**
@@ -189,15 +184,13 @@ class Map extends React.Component<{
                 this.setState({ geolocation: { marker: marker, circle: circle }})
 
                 if (panToUserPosition && this.map) {
-                    this.mapCenter = [latitude, longitude];
-                    this.map.flyTo(this.mapCenter, 17, {
+                    this.map.flyTo([latitude, longitude], 17, {
                         animate: false, 
                     });
                 }
             }, () => {
                 if (this.map) {
-                    this.mapCenter = [43.552550, 7.022886];
-                    this.map.flyTo(this.mapCenter, this.map.getZoom(), {
+                    this.map.flyTo([43.552550, 7.022886], this.map.getZoom(), {
                         animate: false,
                     });
                 }
@@ -232,8 +225,7 @@ class Map extends React.Component<{
                         }
                     }
                     else {
-                        this.mapCenter = e.target.getLatLng();
-                        this.map?.flyTo(this.mapCenter, 17, {animate: false});
+                        this.map?.flyTo(e.target.getLatLng(), 17, {animate: false});
                     }
 
                     e.target.openPopup();
