@@ -7,6 +7,7 @@ import StationDetails from './pages/stationDetails/StationDetails';
 import stations from './mock-data/stations';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomeView from './pages/homeView/homeView';
+import GasRefuelStats from "./pages/gasRefuelStats/GasRefuelStats";
 
 export const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -48,6 +49,7 @@ function App() {
                 <Route path="/" element={<HomeView></HomeView>} />
                 <Route path="/home" element={<MainView></MainView>} />
                 <Route path="/stationDetails/:id" element={ <StationDetails station={stations[0]}></StationDetails>}></Route>
+                <Route path="/gasRefuelStats" element={ <GasRefuelStats></GasRefuelStats>}></Route>
             </Routes>
           </div>
         </ThemeProvider>

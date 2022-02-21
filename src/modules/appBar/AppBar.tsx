@@ -1,11 +1,12 @@
-import { AccountCircle, Logout, Settings, LocalGasStation } from "@mui/icons-material";
-import { Box, Toolbar, IconButton, Typography, AppBar, Tooltip, Avatar, Menu, MenuItem, Divider, ListItemIcon, Dialog, Slide, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, FormControl, InputLabel, Select, Snackbar, Alert, AlertColor } from "@mui/material";
-import React, { useContext } from "react";
+import {AccountCircle, Logout, Settings, LocalGasStation, QueryStatsSharp} from "@mui/icons-material";
+import { Box, Toolbar, IconButton, Typography, AppBar, Tooltip, Avatar, Menu, MenuItem, Divider, ListItemIcon, Dialog, Slide, Snackbar, Alert} from "@mui/material";
+import React , { useContext }from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import LoginForm from "../loginForm/LoginForm";
 import RefuelForm from "../refuelForm/refuelForm";
 import { ColorModeContext } from "../../App";
+import {useNavigate} from "react-router-dom";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -17,8 +18,8 @@ const Transition = React.forwardRef(function Transition(
   });
 
 class AppBarCustom extends React.Component<{
-    colorMode: any
-}, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean, dialogGasOpen: boolean, snackbarOpen: boolean }>{
+    colorMode: any, navigate: any
+}, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean, dialogGasOpen: boolean, snackbarOpen: boolean }> {
 
 
     public snackbarSuccess: any;
@@ -32,12 +33,13 @@ class AppBarCustom extends React.Component<{
         this.handleOnAcccountMenuClose = this.handleOnAcccountMenuClose.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this);
         this.updateLoginStatus = this.updateLoginStatus.bind(this);
-        this.handleGasFuelPopup = this.handleGasFuelPopup.bind(this);   
+        this.handleGasFuelPopup = this.handleGasFuelPopup.bind(this);
+        this.handleGasRefuelStatsPage = this.handleGasRefuelStatsPage.bind(this);
         this.logout = this.logout.bind(this);
         this.openSnackbar = this.openSnackbar.bind(this);
         this.closeSnackbar = this.closeSnackbar.bind(this);
         this.changeTheme = this.changeTheme.bind(this);
-        
+
         // Init state
         this.state = {
             anchorEl: null,
@@ -50,7 +52,7 @@ class AppBarCustom extends React.Component<{
 
     /**
      * Called on profile btn click
-     * @param event 
+     * @param event
      */
     public handleProfileMenuOpen(event: React.MouseEvent<HTMLElement>) {
         this.setState({ anchorEl: event.currentTarget });
@@ -74,6 +76,10 @@ class AppBarCustom extends React.Component<{
 
     public handleGasFuelPopup(){
         this.setState({dialogGasOpen: !this.state.dialogGasOpen})
+    }
+
+    public handleGasRefuelStatsPage() {
+        this.props.navigate('/gasRefuelStats');
     }
 
     public openSnackbar(success: boolean, message: string): void{
@@ -126,7 +132,7 @@ class AppBarCustom extends React.Component<{
 
     /**
      * Render the component
-     * @returns 
+     * @returns
      */
     render(): React.ReactNode {
         return (
@@ -139,9 +145,9 @@ class AppBarCustom extends React.Component<{
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: 'flex' }}>
 
-                    {(this.state.userLogged) ? 
+                    {(this.state.userLogged) ?
                         <Tooltip title="Add new gas fuel">
-                            <IconButton 
+                            <IconButton
                             size="large"
                             edge="end"
                             aria-label="Adding fuel"
@@ -155,8 +161,24 @@ class AppBarCustom extends React.Component<{
                             </IconButton>
                         </Tooltip>
                     : ''}
+                        {(this.state.userLogged) ?
+                            <Tooltip title="View gas refuel">
+                                <IconButton
+                                    size="large"
+                                    edge="end"
+                                    aria-label="View gas refuel"
+                                    aria-controls='view-refuel-button'
+                                    aria-haspopup="true"
+                                    onClick={this.handleGasRefuelStatsPage}
+                                    color="inherit"
+                                    sx={{ color: 'black'}}
+                                >
+                                    <QueryStatsSharp/>
+                                </IconButton>
+                            </Tooltip>
+                    : ''}
                     {(this.state.dialogGasOpen) ? <RefuelForm onClose={this.handleGasFuelPopup} openSnackbar={this.openSnackbar}></RefuelForm> : ''}
-                    
+
                         <Tooltip title="Account settings">
                             <IconButton
                                 size="large"
@@ -183,7 +205,7 @@ class AppBarCustom extends React.Component<{
                             sx: { overflow: 'visible', filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
                                     mt: 1.5, '& .MuiAvatar-root': { width: 32, height: 32, ml: -0.5, mr: 1 },
                                     '&:before': { content: '""', display: 'block', position: 'absolute', top: 0, right: 14,
-                                        width: 10, height: 10, bgcolor: 'background.paper', 
+                                        width: 10, height: 10, bgcolor: 'background.paper',
                                         transform: 'translateY(-50%) rotate(45deg)', zIndex: 0,
                                     },
                             },
@@ -217,15 +239,15 @@ class AppBarCustom extends React.Component<{
             onClose={this.closeSnackbar}
             anchorOrigin={{horizontal: 'center', vertical: 'bottom'}}
             >
-            <Alert  
+            <Alert
             severity={this.snackbarSuccess}>
             {this.snackbarMessage}
             </Alert>
             </Snackbar>
-            
+
         </Box>
 
-        
+
         );
     }
 
@@ -233,7 +255,8 @@ class AppBarCustom extends React.Component<{
 
 function WithColor(props: any) {
     let colorMode = useContext(ColorModeContext);
-    return <AppBarCustom {...props} colorMode={colorMode} />
+    let navigate = useNavigate();
+    return <AppBarCustom {...props} colorMode={colorMode} navigate={navigate} />
 }
 
 export default WithColor;

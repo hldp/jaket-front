@@ -47,7 +47,7 @@ class RefuelForm extends React.Component<{
             if(res){
                 this.props.openSnackbar(true, "Successfully refuel gas !");
                 this.props.onClose();
-
+                window.location.reload();
             }
         })}
 

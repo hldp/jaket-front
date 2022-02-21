@@ -13,6 +13,12 @@ class LineGraph extends React.Component<{gasData: GasDataPrice[]},{gasData: GasD
         }
     }
 
+    componentDidUpdate(prevProps: any, prevState: any, snapshot?: any) {
+        if(prevProps.gasData !== this.props.gasData) {
+            this.setState({gasData: this.props.gasData});
+        }
+    }
+
     private getColorPerGas(gaz : GasType): string{
         if(gaz === GasType.DIESEL) return "#ff7300";
         if(gaz === GasType.SP98) return "#3232a8";
