@@ -56,40 +56,4 @@ function App() {
   );
 }
 
-// class App extends React.Component<{},{}> {
-
-//   private theme: any;
-
-//   constructor(props:any){
-//     super(props);
-//     this.theme = createTheme({
-//       palette: {
-//         primary: {
-//           main: "#FECC00"
-//         },
-//         secondary: {
-//           main: "#8DA9C4"
-//         }
-//       }
-//     });
-//   }
-
-//   render() {
-//     return (
-//       <BrowserRouter>
-//         <ThemeProvider theme={this.theme}>
-//           <div className="App">
-//             <Routes>
-//                 <Route path="/" element={<HomeView></HomeView>} />
-//                 <Route path="/home" element={<MainView></MainView>} />
-//                 <Route path="/stationDetails/:id" element={ <StationDetails station={stations[0]}></StationDetails>}></Route>
-//             </Routes>
-//           </div>
-//         </ThemeProvider>
-//       </BrowserRouter>
-//     );
-//   }
-  
-// }
-
 export default App;
