@@ -47,7 +47,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
             station: null
         }
         this.navigateToGoogleMap = this.navigateToGoogleMap.bind(this);
-        this.getStationData("month");
+        this.getStationData("month", this.props.params.id);
     }
 
     componentDidMount() {
@@ -66,6 +66,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
         this.stations_request = this.stationsApi.getStation(this.props.params.id).subscribe((station: Station) => {
             this.setState({ station });
         });
+
     }
 
     /**
@@ -95,7 +96,10 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
         }
     }
 
-    private getStationData(period: string):void{
+    private getStationData(period: string, stationID: number):void{
+        this.stationsApi.getGasTrendsByStation(stationID).subscribe((res)=>{
+            console.log(res);
+        })
     }
 
 
@@ -106,7 +110,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
             <div>
                 <AppBarCustom></AppBarCustom>
                 {
-                    (this.state.station != null) ? 
+                    (this.state?.station != null) ? 
                     <h1>{this.state.station.address}      
                     <IconButton color="primary" size="large" onClick={this.navigateToGoogleMap}>
                         <Directions/>

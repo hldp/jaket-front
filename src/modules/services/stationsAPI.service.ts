@@ -116,6 +116,24 @@ import { from, Observable } from "rxjs";
         );
     }    
 
+    public getGasTrendsByStation(stationID: number, period:string = "lastWeek"): Observable<any>{
+
+        const promise : Promise<any> = new Promise<any>((resolve, reject)=>{
+
+
+            let url = this.DEV_URL+'stations/'+stationID+'/price/history/'+period;
+
+            axios.get(url).then((res:any)=>{
+                console.log(res);
+                resolve(res)
+            })
+
+
+        });
+        return from(promise);
+
+    }
+
  }
 
  export default StationsApi;
