@@ -1,10 +1,15 @@
 import { Typography, TextField, Button, Grid, Link, Paper } from "@mui/material";
 import React from "react";
+import { Subscription } from "rxjs";
+import AccountApi from "../services/accountAPI.service";
 
 
 class LoginForm extends React.Component<{
     updateLoginStatus: (logged: boolean) => void;
 }, { username: string, password: string, signIn: boolean }>{
+
+    private accountAPI: AccountApi = new AccountApi();
+    private api_request: Subscription | undefined;
 
     constructor(props : any){
         super(props);
@@ -21,6 +26,10 @@ class LoginForm extends React.Component<{
         }
     }
 
+    componentWillUnmount() {
+        if (this.api_request) this.api_request.unsubscribe();
+    }
+
     public handleUsernameChange(e: any) {
         this.setState({ username: e.currentTarget.value });
     }
@@ -31,7 +40,9 @@ class LoginForm extends React.Component<{
 
     public login() {
         // login with API
-        this.props.updateLoginStatus(true);
+        this.api_request = this.accountAPI.register(this.state.username, this.state.password).subscribe(() => {
+            this.props.updateLoginStatus(true);
+        });
     }
 
     public signIn() {
