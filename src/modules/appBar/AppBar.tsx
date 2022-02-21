@@ -1,10 +1,11 @@
 import { AccountCircle, Logout, Settings, LocalGasStation } from "@mui/icons-material";
 import { Box, Toolbar, IconButton, Typography, AppBar, Tooltip, Avatar, Menu, MenuItem, Divider, ListItemIcon, Dialog, Slide, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, FormControl, InputLabel, Select, Snackbar, Alert, AlertColor } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import LoginForm from "../loginForm/LoginForm";
 import RefuelForm from "../refuelForm/refuelForm";
+import { ColorModeContext } from "../../App";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -16,6 +17,7 @@ const Transition = React.forwardRef(function Transition(
   });
 
 class AppBarCustom extends React.Component<{
+    colorMode: any
 }, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean, dialogGasOpen: boolean, snackbarOpen: boolean }>{
 
 
@@ -34,6 +36,7 @@ class AppBarCustom extends React.Component<{
         this.logout = this.logout.bind(this);
         this.openSnackbar = this.openSnackbar.bind(this);
         this.closeSnackbar = this.closeSnackbar.bind(this);
+        this.changeTheme = this.changeTheme.bind(this);
         
         // Init state
         this.state = {
@@ -117,6 +120,10 @@ class AppBarCustom extends React.Component<{
         )
     }
 
+    public changeTheme() {
+        this.props.colorMode.toggleColorMode();
+    }
+
     /**
      * Render the component
      * @returns 
@@ -126,7 +133,7 @@ class AppBarCustom extends React.Component<{
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" style={{ background: '#fecc00' }}>
                 <Toolbar>
-                    <Typography variant="h6" noWrap component="div" sx={{ display: 'block', color: 'black' }}>
+                    <Typography variant="h6" noWrap component="div" sx={{ display: 'block', color: 'black' }} onClick={this.changeTheme}>
                     JAKET
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
@@ -223,4 +230,10 @@ class AppBarCustom extends React.Component<{
     }
 
 }
-export default AppBarCustom;
+
+function WithColor(props: any) {
+    let colorMode = useContext(ColorModeContext);
+    return <AppBarCustom {...props} colorMode={colorMode} />
+}
+
+export default WithColor;
