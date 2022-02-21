@@ -16,7 +16,7 @@ class Search extends React.Component<{
     isOnFirstPage: boolean
 }, {adresses: Adress[], chipData:ChipData[], city_loading: boolean, city_value: Adress | null}>{
 
-    public defaultRadiusValue = 10;
+    public defaultRadiusValue = this.props.stationFilter.radius;
 
     private adressesApi: AdressesApi = new AdressesApi();
     private searchTerms: String = "";
@@ -44,6 +44,31 @@ class Search extends React.Component<{
         this.onSelectGaz = this.onSelectGaz.bind(this);
         this.onRadiusChange = this.onRadiusChange.bind(this);
         this.handleGpsClick = this.handleGpsClick.bind(this);
+    }
+
+    componentDidMount() {
+        if (this.props.stationFilter.selectedGas.length > 0) {
+            let chipData = [
+                { key: 0, label: GasType.SP95, color: 'default' },
+                { key: 1, label: GasType.SP98, color: 'default' },
+                { key: 2, label: GasType.DIESEL, color: 'default' },
+                { key: 3, label: GasType.GPL, color: 'default' },
+                { key: 4, label: GasType.ETHANOL, color: 'default' },
+            ];
+            this.gazSelected = [];
+            this.props.stationFilter.selectedGas.forEach((gas: GasType) => {
+                this.gazSelected.push(gas);
+                if (gas == GasType.SP95) chipData[0].color = 'primary';
+                else if (gas == GasType.SP98) chipData[1].color = 'primary';
+                else if (gas == GasType.DIESEL) chipData[2].color = 'primary';
+                else if (gas == GasType.GPL) chipData[3].color = 'primary';
+                else if (gas == GasType.ETHANOL) chipData[4].color = 'primary';
+            });
+            this.setState({ chipData });
+        }
+        if (this.props.stationFilter.selectedCity != null) {
+            this.setState({ city_value: this.props.stationFilter.selectedCity });
+        }
     }
 
     /**
