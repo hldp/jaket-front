@@ -1,7 +1,7 @@
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
-import { TextField, Button, Dialog, DialogTitle, DialogContent, FormControl, InputLabel, Select, MenuItem, DialogActions, Slide, Stack, InputAdornment, Snackbar } from "@mui/material";
+import { TextField, Button, Dialog, DialogTitle, DialogContent, FormControl, Select, MenuItem, DialogActions, Stack, InputAdornment } from "@mui/material";
 import React from "react";
 import { GasType } from "../../models/gasType.enum";
 import { refuelAPI } from "../services/refuelAPI.service";

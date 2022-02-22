@@ -9,7 +9,15 @@ export class refuelAPI{
     private DEV_URL : string = "http://localhost:3001/";
     private CLOUD_URL: string = "https://api-jaket.cleverapps.io/"
 
-
+    /**
+     * Post an user refuel to the API
+     * @param gas 
+     * @param quantity 
+     * @param date 
+     * @param totalPrice 
+     * @param stationID 
+     * @returns 
+     */
     public postRefuel(gas: GasType, quantity: number, date: Date, totalPrice: number, stationID?: number): Observable<any>{
 
         let data:any;
@@ -38,6 +46,11 @@ export class refuelAPI{
 
     }
 
+    /**
+     * Get the refuels stats for the current user and for a period
+     * @param period 
+     * @returns 
+     */
     public getRefuelStats(period: PeriodEnum = PeriodEnum.ALL): Observable<GasRefuelStatsModel[]>{
         let url = this.DEV_URL+"user/stats/fillGas";
         url += '?period='+period.toString();

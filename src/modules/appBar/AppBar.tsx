@@ -53,7 +53,6 @@ class AppBarCustom extends React.Component<{
     }
 
     componentDidMount() {
-        // this.props.navigate(-1)
         if (this.props.location.pathname.split('/')[1] === 'stationDetails') this.setState({ canGoBack: true })
         else this.setState({ canGoBack: false })
     }
@@ -90,17 +89,29 @@ class AppBarCustom extends React.Component<{
         this.props.navigate('/gasRefuelStats');
     }
 
+    /**
+     * Open the snackbar
+     * @param success 
+     * @param message 
+     */
     public openSnackbar(success: boolean, message: string): void{
         this.snackbarMessage = message;
         success ? this.snackbarSuccess = "success" : this.snackbarSuccess = "error";
         this.setState({snackbarOpen:true});
     }
 
+    /**
+     * Called when snackbar is closed
+     * @param e 
+     */    
     public closeSnackbar(e:any):void{
         this.setState({snackbarOpen:false});
     }
 
-
+    /**
+     * Returns the menu when the user is not logged
+     * @returns 
+     */
     public renderMenuLogged() {
         return(
             [
@@ -124,6 +135,10 @@ class AppBarCustom extends React.Component<{
         )
     }
 
+    /**
+     * Returns the menu when the user is not logged
+     * @returns 
+     */
     public renderMenuNotLogged() {
         return(
             [
@@ -134,6 +149,9 @@ class AppBarCustom extends React.Component<{
         )
     }
 
+    /**
+     * Change the app theme color
+     */
     public changeTheme() {
         this.props.colorMode.toggleColorMode();
     }

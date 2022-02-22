@@ -32,6 +32,11 @@ import { Adress } from "../../models/adress.model";
 
     }
 
+    /**
+     * Get an address string with GPS coordinates
+     * @param position GPS coordinates
+     * @returns 
+     */
     public getAddressFromPosition(position: number[]): Promise<string>{
 
         const promise : Promise<string> = new Promise<string>((resolve, reject)=>{

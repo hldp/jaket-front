@@ -16,6 +16,9 @@ class HomeView extends React.Component<{stationFilter:any, dispatch:any, navigat
     this.onSearch = this.onSearch.bind(this);
   }
 
+  /**
+   * Called on search btn click
+   */
   public onSearch() {
     if (this.props.stationFilter.selectedCity == null) {
         this.setState({ displayAlert: true })

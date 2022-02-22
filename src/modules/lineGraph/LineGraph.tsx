@@ -19,12 +19,17 @@ class LineGraph extends React.Component<{gasData: GasDataPrice[]},{gasData: GasD
         }
     }
 
-    private getColorPerGas(gaz : GasType): string{
-        if(gaz === GasType.DIESEL) return "#ff7300";
-        if(gaz === GasType.SP98) return "#3232a8";
-        if(gaz === GasType.SP95) return "#6464a3";
-        if(gaz === GasType.ETHANOL) return "#c7c114";
-        if(gaz === GasType.GPL) return "#45a2c4";
+    /**
+     * Get a color depending the gas param
+     * @param gas
+     * @returns 
+     */
+    private getColorPerGas(gas : GasType): string{
+        if(gas === GasType.DIESEL) return "#ff7300";
+        if(gas === GasType.SP98) return "#3232a8";
+        if(gas === GasType.SP95) return "#6464a3";
+        if(gas === GasType.ETHANOL) return "#c7c114";
+        if(gas === GasType.GPL) return "#45a2c4";
         return "#000000";
     }
 

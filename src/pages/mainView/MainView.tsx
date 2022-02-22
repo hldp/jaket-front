@@ -4,7 +4,6 @@ import Search from '../../modules/search/Search';
 import AppBarCustom from '../../modules/appBar/AppBar';
 import { Box, Button, ButtonGroup, Grid } from '@mui/material';
 import './MainView.css';
-import { GasType } from '../../models/gasType.enum';
 import { Adress } from '../../models/adress.model';
 import List from '../../modules/list/List';
 import { connect } from 'react-redux';
@@ -23,10 +22,16 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
     this.buttonGroupListClick = this.buttonGroupListClick.bind(this);
   }
 
+  /**
+   * Called when map btn is clicked
+   */
   public buttonGroupMapClick() {
     this.setState({ displayedElement: 'map' })
   }
 
+  /**
+   * Called when list btn is clicked
+   */
   public buttonGroupListClick() {
     this.setState({ displayedElement: 'list' })
   }

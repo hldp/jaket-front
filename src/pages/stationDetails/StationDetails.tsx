@@ -1,7 +1,6 @@
 import { Directions } from "@mui/icons-material";
 import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card, CircularProgress } from "@mui/material";
 import React from "react";
-import { Adress } from "../../models/adress.model";
 import { Station } from "../../models/station.model";
 import AppBarCustom from "../../modules/appBar/AppBar";
 import Map from "../../modules/map/Map";
@@ -145,7 +144,6 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
                     </Card>
                     : <CircularProgress style={{ height: '70px', width: '70px' }}/>
                 }
-                {/* // TODO display only one station on the map */}
                 <Map height={"300px"} centerOn={this.state.station} enableStationPopup={false}></Map>
                 <Card className="infoCard">
                     <LineGraph gasData={this.dataTemp}></LineGraph>

@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import './Map.css';
 import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import L, { LatLngExpression } from "leaflet";
+import L from "leaflet";
 import { MarkerObject } from "../../models/marker-object.model";
 import { Station } from "../../models/station.model";
 import MarkerClusterGroup from 'react-leaflet-markercluster';

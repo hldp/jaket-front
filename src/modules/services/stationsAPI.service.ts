@@ -120,6 +120,12 @@ import { from, Observable } from "rxjs";
         );
     }    
 
+    /**
+     * Get he gas trend for a period and a particular station
+     * @param stationID 
+     * @param period 
+     * @returns 
+     */
     public getGasTrendsByStation(stationID: number, period:string = "lastWeek"): Observable<any>{
 
         const promise : Promise<any> = new Promise<any>((resolve, reject)=>{
