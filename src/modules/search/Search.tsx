@@ -58,11 +58,11 @@ class Search extends React.Component<{
             this.gazSelected = [];
             this.props.stationFilter.selectedGas.forEach((gas: GasType) => {
                 this.gazSelected.push(gas);
-                if (gas == GasType.SP95) chipData[0].color = 'primary';
-                else if (gas == GasType.SP98) chipData[1].color = 'primary';
-                else if (gas == GasType.DIESEL) chipData[2].color = 'primary';
-                else if (gas == GasType.GPL) chipData[3].color = 'primary';
-                else if (gas == GasType.ETHANOL) chipData[4].color = 'primary';
+                if (gas === GasType.SP95) chipData[0].color = 'primary';
+                else if (gas === GasType.SP98) chipData[1].color = 'primary';
+                else if (gas === GasType.DIESEL) chipData[2].color = 'primary';
+                else if (gas === GasType.GPL) chipData[3].color = 'primary';
+                else if (gas === GasType.ETHANOL) chipData[4].color = 'primary';
             });
             this.setState({ chipData });
         }

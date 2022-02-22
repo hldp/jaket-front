@@ -6,7 +6,8 @@ import { TransitionProps } from '@mui/material/transitions';
 import LoginForm from "../loginForm/LoginForm";
 import RefuelForm from "../refuelForm/refuelForm";
 import { ColorModeContext } from "../../App";
-import {useNavigate} from "react-router-dom";
+import {Location, useLocation, useNavigate} from "react-router-dom";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -18,8 +19,8 @@ const Transition = React.forwardRef(function Transition(
   });
 
 class AppBarCustom extends React.Component<{
-    colorMode: any, navigate: any
-}, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean, dialogGasOpen: boolean, snackbarOpen: boolean }> {
+    colorMode: any, navigate: any, location: Location
+}, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean, dialogGasOpen: boolean, snackbarOpen: boolean, canGoBack: boolean }> {
 
 
     public snackbarSuccess: any;
@@ -46,8 +47,15 @@ class AppBarCustom extends React.Component<{
             dialogOpen: false,
             userLogged: false,
             dialogGasOpen: false,
-            snackbarOpen: false
+            snackbarOpen: false,
+            canGoBack: false
         }
+    }
+
+    componentDidMount() {
+        // this.props.navigate(-1)
+        if (this.props.location.pathname.split('/')[1] === 'stationDetails') this.setState({ canGoBack: true })
+        else this.setState({ canGoBack: false })
     }
 
     /**
@@ -139,6 +147,24 @@ class AppBarCustom extends React.Component<{
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" style={{ background: '#fecc00' }}>
                 <Toolbar>
+                    {(this.state.canGoBack)?
+                        <Tooltip title="Go back">
+                            <IconButton
+                                size="large"
+                                edge="start"
+                                aria-label="Go back"
+                                aria-controls='go-back-button'
+                                aria-haspopup="true"
+                                onClick={(e) => {this.props.navigate(-1)}}
+                                color="inherit"
+                                sx={{ color: 'black'}}
+                            >
+                                <ArrowBackIosIcon/>
+                            </IconButton>
+                         </Tooltip>
+
+                    :''}
+                    
                     <Typography variant="h6" noWrap component="div" sx={{ display: 'block', color: 'black' }} onClick={this.changeTheme}>
                     JAKET
                     </Typography>
@@ -253,10 +279,11 @@ class AppBarCustom extends React.Component<{
 
 }
 
-function WithColor(props: any) {
+function WithHooks(props: any) {
     let colorMode = useContext(ColorModeContext);
     let navigate = useNavigate();
-    return <AppBarCustom {...props} colorMode={colorMode} navigate={navigate} />
+    let location = useLocation();
+    return <AppBarCustom {...props} colorMode={colorMode} navigate={navigate} location={location} />
 }
 
-export default WithColor;
+export default WithHooks;
