@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import StationsApi from "../services/stationsAPI.service";
 import { Subscription } from "rxjs";
 import { useNavigate } from "react-router-dom";
+import { LatLng } from "leaflet";
 
 // Props, state
 class List extends React.Component<{
@@ -91,7 +92,7 @@ class List extends React.Component<{
      * @param page 
      * @param rowsPerPage 
      */
-    private updateDisplayedStations(page: number, rowsPerPage: number) {
+    private updateDisplayedStations(page: number, rowsPerPage: number, orderBy?: keyof Data, order?: Order) {
         this.setState({ isLoading: true });
         let selectedGas = this.props.stationFilter.selectedGas;
         let area;
@@ -101,6 +102,20 @@ class List extends React.Component<{
                 coordinate: [this.props.stationFilter.selectedCity.latitude, this.props.stationFilter.selectedCity.longitude]
             }
         }
+        let orders: any = {};
+        if (!orderBy && !order) {
+            orderBy = this.state.orderBy;
+            order = this.state.order;
+        }
+        if (orderBy && order) {
+            if (orderBy === 'address') orders[orderBy] = order;
+            else {
+                orders['gas'] = {
+                    type: orderBy,
+                    value: order
+                };
+            }
+        }
 
         let offset = page*rowsPerPage;
         this.stations_request = this.stationsApi.getStations(
@@ -108,13 +123,15 @@ class List extends React.Component<{
             selectedGas,
             area,
             rowsPerPage,
-            offset
+            offset,
+            orders
         ).subscribe((stations: Station[]) => {
             let rows = this.state.rows;
             for(let i = 0; i < rowsPerPage; i++) {
                 if (i < stations.length) rows[i+offset] = this.getStationsRows([stations[i]])[0]
             }
             this.setState({ rows: rows, isLoading: false });
+            if (orderBy && order) this.setState({  order: order, orderBy: orderBy });
         });
     }
 
@@ -127,24 +144,35 @@ class List extends React.Component<{
         let rows: Data[] = [];
 
         stations.forEach((station) => {
-            let gas: number[] = [];
-            station.prices.forEach(price => gas[price.gas_id] = price.price);
+            let gas: any = {};
+            station.prices.forEach(price => gas[price.gas_name] = price.price);
             let is_open = this.mapService.isStationOpened(station);
             let data: Data = {
                 id: station.id,
                 address: station.address,
-                gas_1: gas[1],
-                gas_2: gas[2],
-                gas_3: gas[3],
-                gas_4: gas[4],
-                gas_5: gas[5],
-                gas_6: gas[6],
+                Gazole: gas['Gazole'],
+                SP95: gas['SP95'],
+                E85: gas['E85'],
+                GPLc: gas['GPLc'],
+                SP95_e10: gas['SP95_e10'],
+                SP98: gas['SP98'],
+                distance: this.getDistance(station),
                 open: is_open
             };
             rows.push(data);
         });
 
         return rows;
+    }
+
+    /**
+     * Get the distance between the station and the user position
+     * @param station 
+     */
+    private getDistance(station: Station): number {
+        let stationPosition = new LatLng(station.latitude, station.longitude);
+        let currentPosition = new LatLng(this.props.stationFilter.selectedCity.latitude, this.props.stationFilter.selectedCity.longitude);
+        return currentPosition.distanceTo(stationPosition);
     }
 
     /** 
@@ -175,8 +203,13 @@ class List extends React.Component<{
      */
     private handleRequestSort(property: keyof Data) {
         const isAsc = this.state.orderBy === property && this.state.order === 'asc';
-        this.setState({ order: isAsc ? 'desc' : 'asc' });
-        this.setState({ orderBy: property });
+        if (property === 'distance' || property === 'open') {
+            this.setState({ order: isAsc ? 'desc' : 'asc' });
+            this.setState({ orderBy: property });
+        }
+        else {
+            this.updateDisplayedStations(this.state.page, this.state.rowsPerPage, property, isAsc ? 'desc' : 'asc');
+        }
     }
     
     /**
@@ -234,12 +267,13 @@ class List extends React.Component<{
                                 <TableCell component="th" id={labelId} scope="row" padding="none">
                                     {row.address}
                                 </TableCell>
-                                <TableCell align="right">{row.gas_1}</TableCell>
-                                <TableCell align="right">{row.gas_2}</TableCell>
-                                <TableCell align="right">{row.gas_3}</TableCell>
-                                <TableCell align="right">{row.gas_4}</TableCell>
-                                <TableCell align="right">{row.gas_5}</TableCell>
-                                <TableCell align="right">{row.gas_6}</TableCell>
+                                <TableCell align="right">{row.Gazole}</TableCell>
+                                <TableCell align="right">{row.SP95}</TableCell>
+                                <TableCell align="right">{row.E85}</TableCell>
+                                <TableCell align="right">{row.GPLc}</TableCell>
+                                <TableCell align="right">{row.SP95_e10}</TableCell>
+                                <TableCell align="right">{row.SP98}</TableCell>
+                                <TableCell align="right">{(Math.floor(row.distance/1000) !== 0)?((row.distance/1000).toFixed(2)+' km'):(Math.floor(row.distance)+' m')}</TableCell>
                                 <TableCell align="right">{row.open?'Yes':'No'}</TableCell>
                             </TableRow>
                             );

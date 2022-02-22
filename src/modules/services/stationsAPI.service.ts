@@ -21,7 +21,7 @@ import { from, Observable } from "rxjs";
      * @param offset offset 
      * @returns a lists of stations
      */
-    public getStations(columns?: string[], gasAvailables?: GasType[], area?: Area, limit?: number, offset:number = 0): Observable<Station[]>{
+    public getStations(columns?: string[], gasAvailables?: GasType[], area?: Area, limit?: number, offset:number = 0, orders: any = {}): Observable<Station[]>{
 
         const promise : Promise<Station[]> = new Promise<Station[]>((resolve, reject)=>{
 
@@ -39,6 +39,10 @@ import { from, Observable } from "rxjs";
                 url += '&filters[area][coordinate][longitude]='+area.coordinate[1];
                 url += '&filters[area][radius]='+area.radius*1000;
             }
+            Object.keys(orders).forEach((key: any) => {
+                if (typeof orders[key] === 'string') url += `&order[${key}]=${orders[key]}`;
+                else  url += `&orders[${key}][${orders[key]['type']}]=${orders[key]['value']}`;
+            })
 
             axios.get(url, {
                 headers: { 'content-type': 'application/json' }

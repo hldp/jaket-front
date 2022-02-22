@@ -5,12 +5,13 @@ import { visuallyHidden } from '@mui/utils';
 export interface Data {
   id: number;
   address: string;
-  gas_1: number; //gazole
-  gas_2: number; // sp95
-  gas_3: number; // e85
-  gas_4: number; // gpLc
-  gas_5: number; // sp95_e10
-  gas_6: number; // sp98
+  Gazole: number; //gazole
+  SP95: number; // sp95
+  E85: number; // e85
+  GPLc: number; // gpLc
+  SP95_e10: number; // sp95_e10
+  SP98: number; // sp98
+  distance: number;
   open: boolean;
 }
 interface HeadCell {
@@ -40,40 +41,46 @@ class EnhancedTableHead extends React.Component<{
               label: 'Address',
             },
             {
-              id: 'gas_1',
+              id: 'Gazole',
               numeric: true,
               disablePadding: false,
               label: 'Gazole',
             },
             {
-              id: 'gas_2',
+              id: 'SP95',
               numeric: true,
               disablePadding: false,
               label: 'SP95',
             },
             {
-              id: 'gas_3',
+              id: 'E85',
               numeric: true,
               disablePadding: false,
               label: 'E85',
             },
             {
-              id: 'gas_4',
+              id: 'GPLc',
               numeric: true,
               disablePadding: false,
               label: 'GPLc',
             },
             {
-              id: 'gas_5',
+              id: 'SP95_e10',
               numeric: true,
               disablePadding: false,
               label: 'SP95_e10',
             },
             {
-              id: 'gas_6',
+              id: 'SP98',
               numeric: true,
               disablePadding: false,
               label: 'SP98',
+            },
+            {
+              id: 'distance',
+              numeric: true,
+              disablePadding: false,
+              label: 'Distance',
             },
             {
               id: 'open',
