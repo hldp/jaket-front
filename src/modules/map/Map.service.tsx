@@ -26,45 +26,10 @@ class MapService {
     }
 
     /**
-     * Get a station popup content
-     * @param station 
-     */
-    public getStationPopup(station: Station) {
-        let daySchedule = undefined;
-        if (station.schedules) {
-            daySchedule = this.getCurrentDateSchedule(station.schedules);
-        }
-        return (
-            <div className="infobulle" style={{ height: '320px'}}>
-                {(station.address) ? <p style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '18px' }}> {station.address} </p> : ''}
-                {/* {(station.address) ? <p className="marker-popup-item address-icon"> {station.address} </p> : ''} */}
-                { (station.schedules) ?
-                     (daySchedule) ? 
-
-                        <p>
-                            <span className={this.isStationOpened(station)?'opened-text':'closed-text'}>
-                                {this.isStationOpened(station)?'Open':'Close'} 
-                            </span>
-                            {this.getPopupIsOpenText(station)}
-                        </p>
-
-                    : '' : ''
-                }
-                { (station.prices) ?
-                        station.prices.map((price, i) => {
-                            return (<p key={i} ><span className="gas-name"> {price.gas_name} </span> : {price.price} €</p>)
-                        })
-                    : ''
-                }
-            </div>
-        );
-    }
-
-    /**
      * Get the text to display opening hours on a station popup
      * @param station
      */
-    private getPopupIsOpenText(station: Station): string {
+     public getPopupIsOpenText(station: Station): string {
         let text = ' • ';
         const isStationOpened = this.isStationOpened(station);
         let daySchedule = undefined;
@@ -78,7 +43,7 @@ class MapService {
      * Get the current day schedule from a list of schedules
      * @param schedules 
      */
-     private getCurrentDateSchedule(schedules: Schedule[]): Schedule | undefined {
+    public getCurrentDateSchedule(schedules: Schedule[]): Schedule | undefined {
         let date = new Date(Date.now());
         let dateDay = date.getDay();
         if (dateDay === 0) dateDay = 7;

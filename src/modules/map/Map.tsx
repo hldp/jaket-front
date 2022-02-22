@@ -10,6 +10,7 @@ import StationsApi from "../services/stationsAPI.service";
 import { Subscription } from "rxjs";
 import { connect } from "react-redux";
 import { CircularProgress } from "@mui/material";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 // Props, state
 class Map extends React.Component<{ 
@@ -17,7 +18,8 @@ class Map extends React.Component<{
     height: string,
     enableStationPopup?: boolean
     stationFilter: any,
-    dispatch: any
+    dispatch: any,
+    navigate: NavigateFunction
  }, { 
      geolocation: { marker: MarkerObject, circle: L.Circle | null } | null, 
      clusters: Array<Array<MarkerObject>>, 
@@ -238,13 +240,57 @@ class Map extends React.Component<{
                 <Popup autoPan={marker.popup.autoPan} minWidth={marker.popup.minWidth} maxWidth={marker.popup.maxWidth} maxHeight={marker.popup.maxHeight}>
                     {this.state.currentPopupStation != null ? 
                         
-                        this.mapService.getStationPopup(this.state.currentPopupStation)
+                        this.getStationPopup(this.state.currentPopupStation)
                         
                         : <CircularProgress />}
                 </Popup> 
                 : ''
             }
         </Marker>
+    }
+
+    /**
+     * Navigate to the station detail page
+     * @param station_id 
+     */
+    public navigateToStationDetail(station_id: number) {
+        return (event: React.MouseEvent<unknown>) => {
+            this.props.navigate(`/stationDetails/${station_id}`);
+        };
+    }
+
+    /**
+     * Get a station popup content
+     * @param station 
+     */
+     public getStationPopup(station: Station) {
+        let daySchedule = undefined;
+        if (station.schedules) {
+            daySchedule = this.mapService.getCurrentDateSchedule(station.schedules);
+        }
+        return (
+            <div className="infobulle" style={{ height: '320px'}}>
+                {(station.address) ? <p onClick={this.navigateToStationDetail(station.id)} style={{ textAlign: 'center', fontWeight: 'bold', fontSize: '18px', cursor: 'pointer' }}> {station.address} </p> : ''}
+                { (station.schedules) ?
+                     (daySchedule) ? 
+
+                        <p>
+                            <span className={this.mapService.isStationOpened(station)?'opened-text':'closed-text'}>
+                                {this.mapService.isStationOpened(station)?'Open':'Close'} 
+                            </span>
+                            {this.mapService.getPopupIsOpenText(station)}
+                        </p>
+
+                    : '' : ''
+                }
+                { (station.prices) ?
+                        station.prices.map((price, i) => {
+                            return (<p key={i} ><span className="gas-name"> {price.gas_name} </span> : {price.price} €</p>)
+                        })
+                    : ''
+                }
+            </div>
+        );
     }
 
     /**
@@ -316,9 +362,13 @@ class Map extends React.Component<{
 
 }
 
+function WithNavigate(props: any) {
+    let navigate = useNavigate();
+    return <Map {...props} navigate={navigate} />
+}
 const mapStateToProps = (state: any) => {
     return {
       stationFilter: state.stationFilter
     }
 }
-export default connect(mapStateToProps)(Map);
+export default connect(mapStateToProps)(WithNavigate);
