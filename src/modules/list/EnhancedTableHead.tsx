@@ -3,21 +3,22 @@ import React from "react";
 import { visuallyHidden } from '@mui/utils';
 
 export interface Data {
-  id: number;
-  address: string;
-  Gazole: number; //gazole
-  SP95: number; // sp95
-  E85: number; // e85
-  GPLc: number; // gpLc
-  SP95_e10: number; // sp95_e10
-  SP98: number; // sp98
-  distance: number;
-  open: boolean;
+    id: number;
+    address: string;
+    Gazole: number; //gazole
+    SP95: number; // sp95
+    E85: number; // e85
+    GPLc: number; // gpLc
+    SP95_e10: number; // sp95_e10
+    SP98: number; // sp98
+    distance: number;
+    open: boolean;
 }
 interface HeadCell {
     disablePadding: boolean;
     id: keyof Data;
     label: string;
+    sortable?: boolean;
     numeric: boolean;
 }
 
@@ -35,58 +36,67 @@ class EnhancedTableHead extends React.Component<{
         super(props);
         this.headCells = [
             {
-              id: 'address',
-              numeric: false,
-              disablePadding: true,
-              label: 'Address',
+                id: 'address',
+                numeric: false,
+                disablePadding: true,
+                sortable: true,
+                label: 'Address',
             },
             {
-              id: 'Gazole',
-              numeric: true,
-              disablePadding: false,
-              label: 'Gazole',
+                id: 'Gazole',
+                numeric: true,
+                disablePadding: false,
+                sortable: true,
+                label: 'Gazole',
             },
             {
-              id: 'SP95',
-              numeric: true,
-              disablePadding: false,
-              label: 'SP95',
+                id: 'SP95',
+                numeric: true,
+                disablePadding: false,
+                sortable: true,
+                label: 'SP95',
             },
             {
-              id: 'E85',
-              numeric: true,
-              disablePadding: false,
-              label: 'E85',
+                id: 'E85',
+                numeric: true,
+                disablePadding: false,
+                sortable: true,
+                label: 'E85',
             },
             {
-              id: 'GPLc',
-              numeric: true,
-              disablePadding: false,
-              label: 'GPLc',
+                id: 'GPLc',
+                numeric: true,
+                disablePadding: false,
+                sortable: true,
+                label: 'GPLc',
             },
             {
-              id: 'SP95_e10',
-              numeric: true,
-              disablePadding: false,
-              label: 'SP95_e10',
+                id: 'SP95_e10',
+                numeric: true,
+                disablePadding: false,
+                sortable: true,
+                label: 'SP95_e10',
             },
             {
-              id: 'SP98',
-              numeric: true,
-              disablePadding: false,
-              label: 'SP98',
+                id: 'SP98',
+                numeric: true,
+                disablePadding: false,
+                sortable: true,
+                label: 'SP98',
             },
             {
-              id: 'distance',
-              numeric: true,
-              disablePadding: false,
-              label: 'Distance',
+                id: 'distance',
+                numeric: true,
+                disablePadding: false,
+                sortable: true,
+                label: 'Distance',
             },
             {
-              id: 'open',
-              numeric: true,
-              disablePadding: false,
-              label: 'Open',
+                id: 'open',
+                numeric: true,
+                disablePadding: false,
+                sortable: false,
+                label: 'Open',
             },
         ];
     }
@@ -100,32 +110,34 @@ class EnhancedTableHead extends React.Component<{
     render() {
         return (
             <TableHead>
-              <TableRow>
-                {this.headCells.map((headCell) => (
-                  <TableCell
-                    key={headCell.id}
-                    align={headCell.numeric ? 'right' : 'left'}
-                    padding={headCell.disablePadding ? 'none' : 'normal'}
-                    sortDirection={this.props.orderBy === headCell.id ? this.props.order : false}
-                  >
-                    <TableSortLabel
-                      active={this.props.orderBy === headCell.id}
-                      direction={this.props.orderBy === headCell.id ? this.props.order : 'asc'}
-                      onClick={this.createSortHandler(headCell.id)}
-                    >
-                      {headCell.label}
-                      {this.props.orderBy === headCell.id ? (
-                        <Box component="span" sx={visuallyHidden}>
-                          {this.props.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                        </Box>
-                      ) : null}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-              </TableRow>
+                <TableRow>
+                    {this.headCells.map((headCell) => (
+                        <TableCell
+                            key={headCell.id}
+                            align={headCell.numeric ? 'right' : 'left'}
+                            padding={headCell.disablePadding ? 'none' : 'normal'}
+                            sortDirection={this.props.orderBy === headCell.id ? this.props.order : false}
+                        >
+                            {headCell.sortable ? (
+                                <TableSortLabel
+                                    active={this.props.orderBy === headCell.id}
+                                    direction={this.props.orderBy === headCell.id ? this.props.order : 'asc'}
+                                    onClick={this.createSortHandler(headCell.id)}
+                                >
+                                    {headCell.label}
+                                    {this.props.orderBy === headCell.id ? (
+                                        <Box component="span" sx={visuallyHidden}>
+                                            {this.props.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                        </Box>
+                                    ) : null}
+                                </TableSortLabel>
+                            ) : (<p>{headCell.label}</p>) }
+                        </TableCell>
+                    ))}
+                </TableRow>
             </TableHead>
         );
-    }                                                    
+    }
 }
-  
+
 export default EnhancedTableHead;

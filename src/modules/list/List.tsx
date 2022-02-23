@@ -89,8 +89,10 @@ class List extends React.Component<{
 
     /**
      * Get the stations details for current displayed stations on the list
-     * @param page 
-     * @param rowsPerPage 
+     * @param page
+     * @param rowsPerPage
+     * @param orderBy
+     * @param order
      */
     private updateDisplayedStations(page: number, rowsPerPage: number, orderBy?: keyof Data, order?: Order) {
         this.setState({ isLoading: true });
@@ -108,12 +110,23 @@ class List extends React.Component<{
             order = this.state.order;
         }
         if (orderBy && order) {
-            if (orderBy === 'address') orders[orderBy] = order;
+            if (orderBy === 'distance') {
+                orders[orderBy] = [{
+                    type: 'latitude',
+                    value: this.props.stationFilter.selectedCity.latitude,
+                },{
+                    type: 'longitude',
+                    value: this.props.stationFilter.selectedCity.longitude,
+                }];
+            }
+            else if (orderBy === 'address') {
+                orders[orderBy] = [order];
+            }
             else {
-                orders['gas'] = {
+                orders['gas'] = [{
                     type: orderBy,
                     value: order
-                };
+                }];
             }
         }
 
@@ -202,14 +215,11 @@ class List extends React.Component<{
      * @param property the property to order
      */
     private handleRequestSort(property: keyof Data) {
-        const isAsc = this.state.orderBy === property && this.state.order === 'asc';
-        if (property === 'distance' || property === 'open') {
-            this.setState({ order: isAsc ? 'desc' : 'asc' });
-            this.setState({ orderBy: property });
+        let isAsc = this.state.orderBy === property && this.state.order === 'asc';
+        if (property === 'distance') {
+            isAsc = false;
         }
-        else {
-            this.updateDisplayedStations(this.state.page, this.state.rowsPerPage, property, isAsc ? 'desc' : 'asc');
-        }
+        this.updateDisplayedStations(this.state.page, this.state.rowsPerPage, property, isAsc ? 'desc' : 'asc');
     }
     
     /**

@@ -40,8 +40,10 @@ import { from, Observable } from "rxjs";
                 url += '&filters[area][radius]='+area.radius*1000;
             }
             Object.keys(orders).forEach((key: any) => {
-                if (typeof orders[key] === 'string') url += `&order[${key}]=${orders[key]}`;
-                else  url += `&orders[${key}][${orders[key]['type']}]=${orders[key]['value']}`;
+                for (const order of orders[key]) {
+                    if (typeof order === 'string') url += `&order[${key}]=${order}`;
+                    else  url += `&orders[${key}][${order['type']}]=${order['value']}`;
+                }
             })
 
             axios.get(url, {

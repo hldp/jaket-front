@@ -1,5 +1,22 @@
 import {AccountCircle, Logout, Settings, LocalGasStation, QueryStatsSharp} from "@mui/icons-material";
-import { Box, Toolbar, IconButton, Typography, AppBar, Tooltip, Avatar, Menu, MenuItem, Divider, ListItemIcon, Dialog, Slide, Snackbar, Alert} from "@mui/material";
+import {
+    Box,
+    Toolbar,
+    IconButton,
+    Typography,
+    AppBar,
+    Tooltip,
+    Avatar,
+    Menu,
+    MenuItem,
+    Divider,
+    ListItemIcon,
+    Dialog,
+    Slide,
+    Snackbar,
+    Alert,
+    useTheme
+} from "@mui/material";
 import React , { useContext }from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -8,6 +25,8 @@ import RefuelForm from "../refuelForm/refuelForm";
 import { ColorModeContext } from "../../App";
 import {Location, useLocation, useNavigate} from "react-router-dom";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -19,7 +38,7 @@ const Transition = React.forwardRef(function Transition(
   });
 
 class AppBarCustom extends React.Component<{
-    colorMode: any, navigate: any, location: Location
+    colorMode: any, navigate: any, location: Location, theme: any
 }, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean, dialogGasOpen: boolean, snackbarOpen: boolean, canGoBack: boolean }> {
 
 
@@ -182,12 +201,16 @@ class AppBarCustom extends React.Component<{
                          </Tooltip>
 
                     :''}
-                    
-                    <Typography variant="h6" noWrap component="div" sx={{ display: 'block', color: 'black' }} onClick={this.changeTheme}>
+
+                    <Typography variant="h6" noWrap component="div" sx={{ display: 'block', color: 'black' }}>
                     JAKET
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: 'flex' }}>
+
+                    <IconButton sx={{ ml: 1 }} onClick={this.changeTheme} color="inherit">
+                        {this.props.theme.palette.mode === 'light' ? <Brightness7Icon /> : <Brightness4Icon />}
+                    </IconButton>
 
                     {(this.state.userLogged) ?
                         <Tooltip title="Add new gas fuel">
@@ -299,9 +322,10 @@ class AppBarCustom extends React.Component<{
 
 function WithHooks(props: any) {
     let colorMode = useContext(ColorModeContext);
+    let theme = useTheme();
     let navigate = useNavigate();
     let location = useLocation();
-    return <AppBarCustom {...props} colorMode={colorMode} navigate={navigate} location={location} />
+    return <AppBarCustom {...props} theme={theme} colorMode={colorMode} navigate={navigate} location={location} />
 }
 
 export default WithHooks;

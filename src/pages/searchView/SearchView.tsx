@@ -3,12 +3,12 @@ import Map from '../../modules/map/Map';
 import Search from '../../modules/search/Search';
 import AppBarCustom from '../../modules/appBar/AppBar';
 import { Box, Button, ButtonGroup, Grid } from '@mui/material';
-import './MainView.css';
+import './SearchView.css';
 import { Adress } from '../../models/adress.model';
 import List from '../../modules/list/List';
 import { connect } from 'react-redux';
 
-class MainView extends React.Component<{stationFilter:any, dispatch:any},{
+class SearchView extends React.Component<{stationFilter:any, dispatch:any},{
   citySelected: Adress, 
   displayedElement: string}> {
 
@@ -41,10 +41,10 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
 
       <Box component={Grid} container spacing={2}>
         <Box component={Grid} item xs={12}>
-          <AppBarCustom></AppBarCustom>
+          <AppBarCustom/>
         </Box>
         <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-box'>
-          <Search isOnFirstPage={false} ></Search>
+          <Search isOnFirstPage={false} />
         </Box>
         <Box component={Grid} item xs={12} className='map-list-container'>
           <ButtonGroup variant="contained" className='button-group' aria-label="outlined primary button group">
@@ -53,8 +53,8 @@ class MainView extends React.Component<{stationFilter:any, dispatch:any},{
           </ButtonGroup>
           {
             (this.state.displayedElement === 'map')?
-            <Map height='600px' enableStationPopup={true}></Map>:
-            <List></List> 
+            <Map height='600px' enableStationPopup={true}/>:
+            <List/>
           }
         </Box>
       </Box>
@@ -67,4 +67,4 @@ const mapStateToProps = (state: any) => {
     stationFilter: state.stationFilter
   }
 }
-export default connect(mapStateToProps)(MainView);
+export default connect(mapStateToProps)(SearchView);

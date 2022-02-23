@@ -24,7 +24,7 @@ class HomeView extends React.Component<{stationFilter:any, dispatch:any, navigat
         this.setState({ displayAlert: true })
     } else {
         this.setState({ displayAlert: false })
-        if (this.props.navigate) this.props.navigate('/home');
+        if (this.props.navigate) this.props.navigate('/search');
     }
   }
 
@@ -32,7 +32,7 @@ class HomeView extends React.Component<{stationFilter:any, dispatch:any, navigat
     return (
       <Box component={Grid} container spacing={2} height={'100%'} style={{ background: 'black' }}>
         <Box component={Grid} item xs={12} height={'81px'}>
-          <AppBarCustom></AppBarCustom>
+          <AppBarCustom/>
         </Box>
         <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-container'>
             <Box component={Grid} container boxShadow={5} className='search-subcontainer'>
@@ -41,7 +41,7 @@ class HomeView extends React.Component<{stationFilter:any, dispatch:any, navigat
                         <Alert severity="error">Please select a city or use your geolocation !</Alert>:''}
                 </Box>
                 <Box component={Grid} item xs={12} sx={{ marginTop: '65px' }}>
-                    <Search isOnFirstPage={true} ></Search>
+                    <Search isOnFirstPage={true} />
                 </Box>
                 <Box component={Grid} item xs={12}>
                     <Button variant="contained" onClick={this.onSearch} className='button'>Search</Button>
