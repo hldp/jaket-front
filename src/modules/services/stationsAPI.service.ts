@@ -136,8 +136,8 @@ import { from, Observable } from "rxjs";
             let url = this.DEV_URL+'stations/'+stationID+'/price/history/'+period;
 
             axios.get(url).then((res:any)=>{
-                console.log(res);
-                resolve(res)
+                //console.log(res);
+                resolve(res.data)
             })
 
 

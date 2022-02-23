@@ -30,6 +30,7 @@ class LineGraph extends React.Component<{gasData: GasDataPrice[]},{gasData: GasD
         if(gas === GasType.SP95) return "#6464a3";
         if(gas === GasType.ETHANOL) return "#c7c114";
         if(gas === GasType.GPL) return "#45a2c4";
+        if(gas === GasType.E10) return "#45a2c4";
         return "#000000";
     }
 

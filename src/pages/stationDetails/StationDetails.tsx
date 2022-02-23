@@ -12,12 +12,12 @@ import { useParams } from "react-router-dom";
 import { Subscription } from "rxjs";
 import StationsApi from "../../modules/services/stationsAPI.service";
 
-class StationDetails extends React.Component<{params: any},{station: Station | null}> {
+class StationDetails extends React.Component<{params: any},{station: Station | null, data: GasDataPrice[]}> {
 
     private stations_request: Subscription | undefined;
     private stationsApi: StationsApi = new StationsApi();
 
-    private dataTemp: GasDataPrice[] = [
+   /*  private dataTemp: GasDataPrice[] = [
         { gas: GasType.DIESEL, data: [
             {date: "Lundi", price: 1.56},
             {date: "Mardi", price: 1.56},
@@ -38,12 +38,13 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
             {date: "Dimanche", price: 1.93},
             
         ]},
-    ]
+    ] */
 
     constructor(props:any){
         super(props);
         this.state = {
-            station: null
+            station: null,
+            data: []
         }
         this.navigateToGoogleMap = this.navigateToGoogleMap.bind(this);
         this.getStationData("month", this.props.params.id);
@@ -97,7 +98,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
 
     private getStationData(period: string, stationID: number):void{
         this.stationsApi.getGasTrendsByStation(stationID).subscribe((res)=>{
-            console.log(res);
+            this.setState({data: res});
         })
     }
 
@@ -145,9 +146,11 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
                     : <CircularProgress style={{ height: '70px', width: '70px' }}/>
                 }
                 <Map height={"300px"} centerOn={this.state.station} enableStationPopup={false}></Map>
+                {(this.state.data.length>0) ? 
                 <Card className="infoCard">
-                    <LineGraph gasData={this.dataTemp}></LineGraph>
+                    <LineGraph gasData={this.state.data}></LineGraph>
                 </Card>
+                : <CircularProgress style={{ height: '70px', width: '70px' }}/>}
             </div>
         );
     }
