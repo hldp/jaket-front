@@ -3,7 +3,7 @@ import { GasType } from "./gasType.enum";
 export class GasPricePeriod {
 
     public date: string = "";
-    public price: number = 0;
+    public price: number | null = 0;
 
 }
 

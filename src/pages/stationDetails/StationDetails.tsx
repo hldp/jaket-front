@@ -5,7 +5,6 @@ import { Station } from "../../models/station.model";
 import AppBarCustom from "../../modules/appBar/AppBar";
 import Map from "../../modules/map/Map";
 import './StationDetails.css'
-import { GasType } from "../../models/gasType.enum";
 import { GasDataPrice } from "../../models/gasDataPrice.model";
 import LineGraph from "../../modules/lineGraph/LineGraph"
 import { useParams } from "react-router-dom";
@@ -17,28 +16,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
     private stations_request: Subscription | undefined;
     private stationsApi: StationsApi = new StationsApi();
 
-   /*  private dataTemp: GasDataPrice[] = [
-        { gas: GasType.DIESEL, data: [
-            {date: "Lundi", price: 1.56},
-            {date: "Mardi", price: 1.56},
-            {date: "Mecredi", price: 1.58},
-            {date: "Jeudi", price: 1.59},
-            {date: "Vendredi", price: 1.60},
-            {date: "Samedi", price: 1.60},
-            {date: "Dimanche", price: 1.60},
-            
-        ]},
-        { gas: GasType.SP98, data: [
-            {date: "Lundi", price: 1.87},
-            {date: "Mardi", price: 1.89},
-            {date: "Mecredi", price: 1.90},
-            {date: "Jeudi", price: 1.91},
-            {date: "Vendredi", price: 1.89},
-            {date: "Samedi", price: 1.92},
-            {date: "Dimanche", price: 1.93},
-            
-        ]},
-    ] */
+    private weekDay: string[] = ["Dimanche", "Lundi", "Mardi", "Mecredi", "Jeudi", "Vendredi", "Samedi"];
 
     constructor(props:any){
         super(props);
@@ -98,8 +76,54 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
 
     private getStationData(period: string, stationID: number):void{
         this.stationsApi.getGasTrendsByStation(stationID).subscribe((res)=>{
-            this.setState({data: res});
+            this.setState({data: this.formatStationData(res)});
         })
+    }
+
+    private formatStationData(res: GasDataPrice[]): GasDataPrice[] {
+        
+        res.forEach(element => {
+            for(let i = 0; i<element.data.length; i++){
+                if(parseInt(element.data[i].date)!==i){
+                    element.data.splice(i, 0, {date: i.toString(), price: null});
+                }
+            }
+            element.data.push(element.data[0]);
+            element.data.shift();
+        });
+
+
+        res.map((priceHistory) => {
+            priceHistory.data.forEach((element) => {
+              switch (parseInt(element.date)) {
+                case 0:
+                  element.date = 'Dimanche';
+                  break;
+                case 1:
+                  element.date = 'Lundi';
+                  break;
+                case 2:
+                  element.date = 'Mardi';
+                  break;
+                case 3:
+                  element.date = 'Mercredi';
+                  break;
+                case 4:
+                  element.date = 'Jeudi';
+                  break;
+                case 5:
+                  element.date = 'Vendredi';
+                  break;
+                case 6:
+                  element.date = 'Samedi';
+                  break;
+                default:
+                  element.date = 'Inconnu';
+              }
+            });
+          });
+
+        return res;
     }
 
 

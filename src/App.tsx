@@ -59,7 +59,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<HomeView/>} />
                             <Route path="/search" element={<SearchView/>} />
-                            <Route path="/station/:id" element={<StationDetails station={stations[0]}/>}/>
+                            <Route path="/stationDetails/:id" element={<StationDetails station={stations[0]}/>}/>
                             <Route path="/gasRefuelStats" element={<GasRefuelStats/>}/>
                         </Routes>
                     </div>

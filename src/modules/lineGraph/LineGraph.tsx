@@ -11,12 +11,14 @@ class LineGraph extends React.Component<{gasData: GasDataPrice[]},{gasData: GasD
         this.state = {
             gasData : props.gasData,
         }
+        //console.log(props.gasData);
     }
 
     componentDidUpdate(prevProps: any, prevState: any, snapshot?: any) {
         if(prevProps.gasData !== this.props.gasData) {
             this.setState({gasData: this.props.gasData});
         }
+
     }
 
     /**
@@ -52,7 +54,7 @@ class LineGraph extends React.Component<{gasData: GasDataPrice[]},{gasData: GasD
                         <Tooltip/>
                         <Legend />
                         {this.state.gasData.map(s => (
-                            <Line stroke={this.getColorPerGas(s.gas)} dataKey="price" data={s.data} name={s.gas} key={s.gas} />
+                            <Line connectNulls={true} stroke={this.getColorPerGas(s.gas)} dataKey="price" data={s.data} name={s.gas} key={s.gas} />
                         ))}
                     </LineChart>
                 </ResponsiveContainer>
