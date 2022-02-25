@@ -1,5 +1,5 @@
 import { Directions } from "@mui/icons-material";
-import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card, CircularProgress } from "@mui/material";
+import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card, CircularProgress, Alert, AlertTitle } from "@mui/material";
 import React from "react";
 import { Station } from "../../models/station.model";
 import AppBarCustom from "../../modules/appBar/AppBar";
@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 import { Subscription } from "rxjs";
 import StationsApi from "../../modules/services/stationsAPI.service";
 
-class StationDetails extends React.Component<{params: any},{station: Station | null, data: GasDataPrice[]}> {
+class StationDetails extends React.Component<{params: any},{station: Station | null, data: GasDataPrice[], loading: boolean, noData: boolean}> {
 
     private stations_request: Subscription | undefined;
     private stationsApi: StationsApi = new StationsApi();
@@ -22,7 +22,9 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
         super(props);
         this.state = {
             station: null,
-            data: []
+            data: [],
+            loading: true,
+            noData: false,
         }
         this.navigateToGoogleMap = this.navigateToGoogleMap.bind(this);
         this.getStationData("month", this.props.params.id);
@@ -75,7 +77,12 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
     }
 
     private getStationData(period: string, stationID: number):void{
+        this.setState({loading: true});
         this.stationsApi.getGasTrendsByStation(stationID).subscribe((res)=>{
+            this.setState({loading: false});
+            if(res.length === 0){
+                this.setState({noData: true});
+            }
             this.setState({data: this.formatStationData(res)});
         })
     }
@@ -93,6 +100,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
         });
 
 
+        // eslint-disable-next-line array-callback-return
         res.map((priceHistory) => {
             priceHistory.data.forEach((element) => {
               switch (parseInt(element.date)) {
@@ -170,11 +178,17 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
                     : <CircularProgress style={{ height: '70px', width: '70px' }}/>
                 }
                 <Map height={"300px"} centerOn={this.state.station} enableStationPopup={false}></Map>
-                {(this.state.data.length>0) ? 
+                {(!this.state.noData && !this.state.loading) ? 
                 <Card className="infoCard">
                     <LineGraph gasData={this.state.data}></LineGraph>
-                </Card>
-                : <CircularProgress style={{ height: '70px', width: '70px' }}/>}
+                </Card> : ""}
+                {(this.state.loading)?
+                    <CircularProgress style={{ height: '70px', width: '70px' }}/>
+                    : ""
+                }
+                {(this.state.noData) ?  
+                <Alert severity="info"> There is no history for this station for the last week.</Alert> : ""
+                }
             </div>
         );
     }

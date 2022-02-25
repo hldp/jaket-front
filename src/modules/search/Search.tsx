@@ -20,7 +20,7 @@ class Search extends React.Component<{
 
     private adressesApi: AdressesApi = new AdressesApi();
     private searchTerms: String = "";
-    private gazSelected: GasType[] = [GasType.DIESEL, GasType.SP95, GasType.SP98, GasType.ETHANOL, GasType.GPL];
+    private gazSelected: GasType[] = [GasType.DIESEL, GasType.SP95, GasType.SP98, GasType.E10, GasType.ETHANOL, GasType.GPL];
     private auto_complete_timeout: NodeJS.Timeout | null = null;
 
     constructor(props : any){
@@ -31,8 +31,9 @@ class Search extends React.Component<{
                 { key: 0, label: GasType.SP95, color: 'primary' },
                 { key: 1, label: GasType.SP98, color: 'primary' },
                 { key: 2, label: GasType.DIESEL, color: 'primary' },
-                { key: 3, label: GasType.GPL, color: 'primary' },
-                { key: 4, label: GasType.ETHANOL, color: 'primary' },
+                { key: 3, label: GasType.E10, color: 'primary' },
+                { key: 4, label: GasType.GPL, color: 'primary' },
+                { key: 5, label: GasType.ETHANOL, color: 'primary' },
             ],
             city_loading: false,
             city_value: null
@@ -52,8 +53,9 @@ class Search extends React.Component<{
                 { key: 0, label: GasType.SP95, color: 'default' },
                 { key: 1, label: GasType.SP98, color: 'default' },
                 { key: 2, label: GasType.DIESEL, color: 'default' },
-                { key: 3, label: GasType.GPL, color: 'default' },
-                { key: 4, label: GasType.ETHANOL, color: 'default' },
+                { key: 3, label: GasType.E10, color: 'default' },
+                { key: 4, label: GasType.GPL, color: 'default' },
+                { key: 5, label: GasType.ETHANOL, color: 'default' },
             ];
             this.gazSelected = [];
             this.props.stationFilter.selectedGas.forEach((gas: GasType) => {
@@ -61,8 +63,9 @@ class Search extends React.Component<{
                 if (gas === GasType.SP95) chipData[0].color = 'primary';
                 else if (gas === GasType.SP98) chipData[1].color = 'primary';
                 else if (gas === GasType.DIESEL) chipData[2].color = 'primary';
-                else if (gas === GasType.GPL) chipData[3].color = 'primary';
-                else if (gas === GasType.ETHANOL) chipData[4].color = 'primary';
+                else if (gas === GasType.E10) chipData[3].color = 'primary';
+                else if (gas === GasType.GPL) chipData[4].color = 'primary';
+                else if (gas === GasType.ETHANOL) chipData[5].color = 'primary';
             });
             this.setState({ chipData });
         }
