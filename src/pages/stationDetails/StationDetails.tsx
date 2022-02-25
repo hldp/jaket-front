@@ -1,5 +1,5 @@
 import { Directions } from "@mui/icons-material";
-import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card, CircularProgress, Alert, AlertTitle } from "@mui/material";
+import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card, CircularProgress, Alert } from "@mui/material";
 import React from "react";
 import { Station } from "../../models/station.model";
 import AppBarCustom from "../../modules/appBar/AppBar";
@@ -15,8 +15,6 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
 
     private stations_request: Subscription | undefined;
     private stationsApi: StationsApi = new StationsApi();
-
-    private weekDay: string[] = ["Dimanche", "Lundi", "Mardi", "Mecredi", "Jeudi", "Vendredi", "Samedi"];
 
     constructor(props:any){
         super(props);
@@ -76,9 +74,14 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
         }
     }
 
+    /**
+     * Get history price data for the station
+     * @param period 
+     * @param stationID 
+     */
     private getStationData(period: string, stationID: number):void{
         this.setState({loading: true});
-        this.stationsApi.getGasTrendsByStation(stationID).subscribe((res)=>{
+        this.stationsApi.getGasHistoryByStation(stationID).subscribe((res)=>{
             this.setState({loading: false});
             if(res.length === 0){
                 this.setState({noData: true});
@@ -87,6 +90,11 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
         })
     }
 
+    /**
+     * Format the station data to be displayed by the graph widget
+     * @param res 
+     * @returns 
+     */
     private formatStationData(res: GasDataPrice[]): GasDataPrice[] {
         
         res.forEach(element => {
@@ -98,7 +106,6 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
             element.data.push(element.data[0]);
             element.data.shift();
         });
-
 
         // eslint-disable-next-line array-callback-return
         res.map((priceHistory) => {
@@ -130,11 +137,8 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
               }
             });
           });
-
         return res;
     }
-
-
 
     render()  {
         return (
