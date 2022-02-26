@@ -25,7 +25,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
             noData: false,
         }
         this.navigateToGoogleMap = this.navigateToGoogleMap.bind(this);
-        this.getStationData("month", this.props.params.id);
+        this.getStationData("lastWeek", this.props.params.id);
     }
 
     componentDidMount() {
