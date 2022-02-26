@@ -81,7 +81,8 @@ class Search extends React.Component<{
      * @param newAdress the new adress
      */
     onSelectCity(e:any, newAdress: any){
-        this.props.dispatch(updateSelectedCity(JSON.stringify(newAdress)));
+        if (newAdress == null) this.setState({ city_value: null });
+        else this.props.dispatch(updateSelectedCity(JSON.stringify(newAdress)));
     }
 
     /**
