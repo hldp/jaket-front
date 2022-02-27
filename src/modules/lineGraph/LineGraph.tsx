@@ -11,7 +11,6 @@ class LineGraph extends React.Component<{gasData: GasDataPrice[]},{gasData: GasD
         this.state = {
             gasData : props.gasData,
         }
-        //console.log(props.gasData);
     }
 
     componentDidUpdate(prevProps: any, prevState: any, snapshot?: any) {
@@ -51,7 +50,7 @@ class LineGraph extends React.Component<{gasData: GasDataPrice[]},{gasData: GasD
                             fontSize: '0.7rem',
                             fontFamily: 'Arial',
                         }}></YAxis>
-                        <Tooltip/>
+                        <Tooltip contentStyle={{ backgroundColor: 'action.hover' }}/>
                         <Legend />
                         {this.state.gasData.map(s => (
                             <Line connectNulls={true} stroke={this.getColorPerGas(s.gas)} dataKey="price" data={s.data} name={s.gas} key={s.gas} />

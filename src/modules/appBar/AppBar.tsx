@@ -141,16 +141,6 @@ class AppBarCustom extends React.Component<{
     public renderMenuLogged() {
         return(
             [
-                <MenuItem key="myaccount">
-                    <Avatar /> My account
-                </MenuItem>,
-                <Divider key="divider" />,
-                <MenuItem key="settings">
-                    <ListItemIcon>
-                        <Settings fontSize="small" />
-                    </ListItemIcon>
-                    Settings
-                </MenuItem>,
                 <MenuItem key="logout" onClick={this.logout}>
                     <ListItemIcon>
                         <Logout fontSize="small" />
