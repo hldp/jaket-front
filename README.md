@@ -1,5 +1,12 @@
 # Getting Started with Jaket Front
 
+## Members
+
+- Lisa-Marie Demmer : Lisa-Demmer
+- Nicolas Labrousse : NicolasLabrousse
+- Damien Piedanna : damien-piedanna
+- Nathan Haro : Nathanha
+
 ## Installation
 
 You have to install and run [jaket-back](https://github.com/hldp/jaket-back) before running this projet.
