@@ -30,17 +30,21 @@ class HomeView extends React.Component<{stationFilter:any, dispatch:any, navigat
 
   render() {
     return (
-      <Box component={Grid} container spacing={2} height={'100%'} style={{ background: 'black' }}>
+      <Box component={Grid} container spacing={2} height={'100%'} sx={{
+          bgcolor: 'background.default',
+      }}>
         <Box component={Grid} item xs={12} height={'81px'}>
           <AppBarCustom/>
         </Box>
         <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-container'>
-            <Box component={Grid} container boxShadow={5} className='search-subcontainer'>
+            <Box component={Grid} container boxShadow={5} className='search-subcontainer' sx={{
+                color: 'text.primary',
+                bgcolor: 'action.hover',
+            }}>
                 <Box component={Grid} item xs={12} className='alert-container'>
-                    {(this.state.displayAlert)?
-                        <Alert severity="error">Please select a city or use your geolocation !</Alert>:''}
+                    {(this.state.displayAlert) ? <Alert severity="error">Please select a city or use your geolocation !</Alert>:''}
                 </Box>
-                <Box component={Grid} item xs={12} sx={{ marginTop: '65px' }}>
+                <Box component={Grid} item xs={12} >
                     <Search isOnFirstPage={true} />
                 </Box>
                 <Box component={Grid} item xs={12}>

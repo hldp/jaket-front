@@ -27,6 +27,8 @@ import {Location, useLocation, useNavigate} from "react-router-dom";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import {connect} from "react-redux";
+import {updateIsLogged} from "../../store/slices/userLogged";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -38,7 +40,7 @@ const Transition = React.forwardRef(function Transition(
   });
 
 class AppBarCustom extends React.Component<{
-    colorMode: any, navigate: any, location: Location, theme: any
+    colorMode: any, navigate: any, location: Location, theme: any, userLogged: any, dispatch: any
 }, { anchorEl: null | HTMLElement, dialogOpen: boolean, userLogged: boolean, dialogGasOpen: boolean, snackbarOpen: boolean, canGoBack: boolean }> {
 
 
@@ -52,7 +54,7 @@ class AppBarCustom extends React.Component<{
         this.handleProfileMenuOpen = this.handleProfileMenuOpen.bind(this);
         this.handleOnAcccountMenuClose = this.handleOnAcccountMenuClose.bind(this);
         this.handleDialogClose = this.handleDialogClose.bind(this);
-        this.updateLoginStatus = this.updateLoginStatus.bind(this);
+        this.closeLoginPopup = this.closeLoginPopup.bind(this);
         this.handleGasFuelPopup = this.handleGasFuelPopup.bind(this);
         this.handleGasRefuelStatsPage = this.handleGasRefuelStatsPage.bind(this);
         this.logout = this.logout.bind(this);
@@ -72,7 +74,10 @@ class AppBarCustom extends React.Component<{
     }
 
     componentDidMount() {
-        if (this.props.location.pathname.split('/')[1] === 'stationDetails') this.setState({ canGoBack: true })
+        this.setState({userLogged: this.props.userLogged.isLogged})
+
+        const route = this.props.location.pathname.split('/')[1];
+        if (route === 'stationDetails' || route === 'gasRefuelStats') this.setState({ canGoBack: true })
         else this.setState({ canGoBack: false })
     }
 
@@ -92,12 +97,14 @@ class AppBarCustom extends React.Component<{
         this.setState({ dialogOpen: false })
     }
 
-    public updateLoginStatus(logged: boolean) {
-        this.setState({ userLogged: logged, dialogOpen: false })
+    public closeLoginPopup() {
+        this.setState({ userLogged: this.props.userLogged.isLogged, dialogOpen: false })
     }
 
     public logout() {
+        this.props.dispatch(updateIsLogged(false));
         this.setState({ userLogged: false })
+        this.props.navigate('/');
     }
 
     public handleGasFuelPopup(){
@@ -162,7 +169,7 @@ class AppBarCustom extends React.Component<{
         return(
             [
                 <MenuItem key="signup" onClick={() => { this.setState({ dialogOpen: true })}}>
-                    <Avatar /> Sign Up
+                    <Avatar /> Sign In
                 </MenuItem>
             ]
         )
@@ -182,7 +189,7 @@ class AppBarCustom extends React.Component<{
     render(): React.ReactNode {
         return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" style={{ background: '#fecc00' }}>
+            <AppBar color='primary' position="static">
                 <Toolbar>
                     {(this.state.canGoBack)?
                         <Tooltip title="Go back">
@@ -194,7 +201,6 @@ class AppBarCustom extends React.Component<{
                                 aria-haspopup="true"
                                 onClick={(e) => {this.props.navigate(-1)}}
                                 color="inherit"
-                                sx={{ color: 'black'}}
                             >
                                 <ArrowBackIosIcon/>
                             </IconButton>
@@ -202,7 +208,7 @@ class AppBarCustom extends React.Component<{
 
                     :''}
 
-                    <Typography variant="h6" noWrap component="div" sx={{ display: 'block', color: 'black' }}>
+                    <Typography variant="h6" noWrap component="div">
                     JAKET
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
@@ -222,7 +228,6 @@ class AppBarCustom extends React.Component<{
                             aria-haspopup="true"
                             onClick={this.handleGasFuelPopup}
                             color="inherit"
-                            sx={{ color: 'black'}}
                             >
                                 <LocalGasStation/>
                             </IconButton>
@@ -238,13 +243,12 @@ class AppBarCustom extends React.Component<{
                                     aria-haspopup="true"
                                     onClick={this.handleGasRefuelStatsPage}
                                     color="inherit"
-                                    sx={{ color: 'black'}}
                                 >
                                     <QueryStatsSharp/>
                                 </IconButton>
                             </Tooltip>
                     : ''}
-                    {(this.state.dialogGasOpen) ? <RefuelForm onClose={this.handleGasFuelPopup} openSnackbar={this.openSnackbar}></RefuelForm> : ''}
+                    {(this.state.dialogGasOpen) ? <RefuelForm onClose={this.handleGasFuelPopup} openSnackbar={this.openSnackbar}/> : ''}
 
                         <Tooltip title="Account settings">
                             <IconButton
@@ -255,7 +259,6 @@ class AppBarCustom extends React.Component<{
                                 aria-haspopup="true"
                                 onClick={this.handleProfileMenuOpen}
                                 color="inherit"
-                                sx={{ color: 'black'}}
                             >
                                 <AccountCircle />
                             </IconButton>
@@ -286,8 +289,6 @@ class AppBarCustom extends React.Component<{
                 </Toolbar>
             </AppBar>
 
-
-
             <Dialog fullScreen open={this.state.dialogOpen} onClose={this.handleDialogClose} TransitionComponent={Transition}>
                 <AppBar sx={{ position: 'relative' }}>
                 <Toolbar>
@@ -297,7 +298,7 @@ class AppBarCustom extends React.Component<{
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">Login</Typography>
                 </Toolbar>
                 </AppBar>
-                <LoginForm updateLoginStatus={this.updateLoginStatus}></LoginForm>
+                <LoginForm closeLoginPopup={this.closeLoginPopup}/>
             </Dialog>
 
             <Snackbar
@@ -320,6 +321,12 @@ class AppBarCustom extends React.Component<{
 
 }
 
+const userLoggedToProps = (state: any) => {
+    return {
+        userLogged: state.userLogged
+    }
+}
+
 function WithHooks(props: any) {
     let colorMode = useContext(ColorModeContext);
     let theme = useTheme();
@@ -328,4 +335,5 @@ function WithHooks(props: any) {
     return <AppBarCustom {...props} theme={theme} colorMode={colorMode} navigate={navigate} location={location} />
 }
 
-export default WithHooks;
+export default connect(userLoggedToProps)(WithHooks);
+

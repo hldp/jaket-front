@@ -15,12 +15,16 @@ export const ColorModeContext = React.createContext({ toggleColorMode: () => {} 
 require('react-leaflet-markercluster/dist/styles.min.css');
 
 function App() {
-
-    const [mode, setMode] = React.useState<'light' | 'dark'>('light');
+    // @ts-ignore
+    const [mode, setMode] = React.useState< 'light' | 'dark'>(localStorage.getItem("MODE") || 'dark');
     const colorMode = React.useMemo(
         () => ({
             toggleColorMode: () => {
-                setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+                setMode((prevMode) => {
+                    const nextMode = prevMode === "light" ? "dark" : "light";
+                    localStorage.setItem("MODE", nextMode);
+                    return nextMode;
+                });
             },
         }),
         [],
@@ -35,15 +39,15 @@ function App() {
                         main: "#FECC00"
                     },
                     secondary: {
-                        main: "#8DA9C4"
+                        main: "#00b0fe"
                     },
                 }
                 : {
                     primary: {
-                        main: "#000000"
+                        main: "#121212"
                     },
                     secondary: {
-                        main: "#e9e9ab"
+                        main: "#bb86fc"
                     },
                 }),
         },
@@ -54,7 +58,7 @@ function App() {
     return (
         <BrowserRouter>
             <ColorModeContext.Provider value={colorMode}>
-                <ThemeProvider theme={theme}>
+                <ThemeProvider theme={theme} >
                     <div className="App">
                         <Routes>
                             <Route path="/" element={<HomeView/>} />

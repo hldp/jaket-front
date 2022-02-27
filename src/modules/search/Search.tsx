@@ -140,7 +140,8 @@ class Search extends React.Component<{
     /**
      * Method trigger when radius is changed
      * Call the updateRadius method from parent view
-     * @param data the event from the slider change
+     * @param event
+     * @param value
      */
     onRadiusChange(event:any, value:any){
         this.props.dispatch(updateRadius(value));
@@ -181,8 +182,9 @@ class Search extends React.Component<{
     render(): React.ReactNode {
         return (
             <Grid container spacing={2}>
-                <Grid item xs={1} sm={3}></Grid>
+                <Grid item xs={1} sm={3}/>
                 <Grid item xs={10} sm={6} alignItems="center" style={{ height: "100%" }}>
+                    {(this.props.isOnFirstPage) ? <><h1>Welcome to Jaket!</h1><h3>To start, locate a gas station</h3></>:''}
                     <Stack direction="row" sx={{ position: 'relative' }}>
                         <Autocomplete
                             options={this.state.adresses}
@@ -190,7 +192,7 @@ class Search extends React.Component<{
                             value={this.state.city_value}
                             sx={{ width: '100%' }}
                             renderInput={(params) => 
-                            <TextField onChange={this.onUserCityInput} {...params} label="Adresse" sx={{ background: 'white'}}
+                            <TextField onChange={this.onUserCityInput} {...params} label="Address"
                             InputProps={{
                                 ...params.InputProps,
                                 endAdornment: (
@@ -217,7 +219,7 @@ class Search extends React.Component<{
                     })}
                     </Stack>
                 </Grid>
-                <Grid item xs={1} sm={3}></Grid>
+                <Grid item xs={1} sm={3}/>
             </Grid>
         );
     }
@@ -228,6 +230,6 @@ const mapStateToProps = (state: any) => {
     return {
       stationFilter: state.stationFilter
     }
-  }
+}
 
 export default connect(mapStateToProps)(Search);

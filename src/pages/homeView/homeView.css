@@ -2,9 +2,7 @@
     height: 91%;
     display: flex;
     align-items: center;
-    background-image: linear-gradient(180deg, #FECC00 -15%, #FFFFFF 100%);
     justify-content: center;
-    background-color: white;
 }
 
 .search-subcontainer {
@@ -13,15 +11,15 @@
     display: flex !important;
     align-items: center;
     border-radius: 40px;
-    background-color: white;
     padding: 20px;
     position: relative;
 }
 
 .alert-container {
-    top: 7px;
     position: absolute;
-    width: 83%;
+    top: 3vh;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .button {

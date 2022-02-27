@@ -38,7 +38,7 @@ class EnhancedTableHead extends React.Component<{
             {
                 id: 'address',
                 numeric: false,
-                disablePadding: true,
+                disablePadding: false,
                 sortable: true,
                 label: 'Address',
             },

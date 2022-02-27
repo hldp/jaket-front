@@ -3,8 +3,9 @@ import {from, Observable} from "rxjs";
 import {GasType} from "../../models/gasType.enum";
 import {PeriodEnum} from "../../models/period.enum";
 import {GasRefuelStatsModel} from "../../models/gasRefuelStats.model";
+import {authAPI} from "./authAPI.service";
 
-export class refuelAPI{
+export class refuelAPI {
 
     private DEV_URL : string = "http://localhost:3001/";
     private CLOUD_URL: string = "https://api-jaket.cleverapps.io/"
@@ -28,9 +29,9 @@ export class refuelAPI{
         }
 
         const promise: Promise<any> = new Promise<any>((resolve, reject)=>{
-            
-            axios.post(this.DEV_URL+"user/fillGas", data, {
-                headers: { 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxpc2EiLCJzdWIiOjIsImlhdCI6MTY0NTQ1MDAxNiwiZXhwIjoxNjQ1NTM2NDE2fQ.8na8duIwxw8yn-ht6H3LxtTlX-v1vsxUo9Bfy9GWtSA'}}).then((res)=>{
+            const token = authAPI.getToken();
+            axios.post(`${process.env.REACT_APP_BACKEND_URL}/user/fillGas`, data, {
+                headers: { 'Authorization': 'Bearer ' + token}}).then((res)=>{
                 if(res){
                     resolve(res);
                 } else{
@@ -52,13 +53,13 @@ export class refuelAPI{
      * @returns 
      */
     public getRefuelStats(period: PeriodEnum = PeriodEnum.ALL): Observable<GasRefuelStatsModel[]>{
-        let url = this.DEV_URL+"user/stats/fillGas";
-        url += '?period='+period.toString();
+        let url = `${process.env.REACT_APP_BACKEND_URL}/user/stats/fillGas`;
+        url +=`?period=${period.toString()}`;
 
         const promise: Promise<GasRefuelStatsModel[]> = new Promise<GasRefuelStatsModel[]>((resolve, reject)=>{
-
+            const token = authAPI.getToken();
             axios.get(url, {
-                headers: { 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxpc2EiLCJzdWIiOjIsImlhdCI6MTY0NTQ1MDAxNiwiZXhwIjoxNjQ1NTM2NDE2fQ.8na8duIwxw8yn-ht6H3LxtTlX-v1vsxUo9Bfy9GWtSA'}}).then((res)=>{
+                headers: { 'Authorization': 'Bearer ' + token}}).then((res)=>{
                 if(res){
                     resolve(res.data);
                 } else{

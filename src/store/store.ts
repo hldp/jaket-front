@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import stationFilterReducer from './slices/stationFilter'
+import userLoggedReducer from './slices/userLogged';
 
 function loadFromLocalStorage() {
   try {
@@ -15,6 +16,7 @@ function loadFromLocalStorage() {
 export default configureStore({
   reducer: {
     stationFilter: stationFilterReducer,
+    userLogged: userLoggedReducer,
   },
   preloadedState: loadFromLocalStorage()
 })

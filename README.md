@@ -9,6 +9,8 @@ Run the following commands to install the project :
 - `cd jaket-front`
 - `npm i`
 
+Copy `.env.example` to `.env` and edit your local environment variables.
+
 ## Available Scripts
 
 In the project directory, you can run:

@@ -1,5 +1,5 @@
 import { Directions } from "@mui/icons-material";
-import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card, CircularProgress, Alert } from "@mui/material";
+import { CardContent, IconButton, Table, TableBody, TableCell, TableHead, TableRow, Card, CircularProgress, Alert, Box, Container } from "@mui/material";
 import React from "react";
 import { Station } from "../../models/station.model";
 import AppBarCustom from "../../modules/appBar/AppBar";
@@ -49,7 +49,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
 
     /**
      * Format the date to be displayed
-     * @param date 
+     * @param date
      * @returns the date formated
      */
     private dateToString(date: Date): string{
@@ -76,8 +76,8 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
 
     /**
      * Get history price data for the station
-     * @param period 
-     * @param stationID 
+     * @param period
+     * @param stationID
      */
     private getStationData(period: string, stationID: number):void{
         this.setState({loading: true});
@@ -92,11 +92,11 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
 
     /**
      * Format the station data to be displayed by the graph widget
-     * @param res 
-     * @returns 
+     * @param res
+     * @returns
      */
     private formatStationData(res: GasDataPrice[]): GasDataPrice[] {
-        
+
         res.forEach(element => {
             for(let i = 0; i<element.data.length; i++){
                 if(parseInt(element.data[i].date)!==i){
@@ -110,90 +110,97 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
         // eslint-disable-next-line array-callback-return
         res.map((priceHistory) => {
             priceHistory.data.forEach((element) => {
-              switch (parseInt(element.date)) {
-                case 0:
-                  element.date = 'Dimanche';
-                  break;
-                case 1:
-                  element.date = 'Lundi';
-                  break;
-                case 2:
-                  element.date = 'Mardi';
-                  break;
-                case 3:
-                  element.date = 'Mercredi';
-                  break;
-                case 4:
-                  element.date = 'Jeudi';
-                  break;
-                case 5:
-                  element.date = 'Vendredi';
-                  break;
-                case 6:
-                  element.date = 'Samedi';
-                  break;
-                default:
-                  element.date = 'Inconnu';
-              }
+                switch (parseInt(element.date)) {
+                    case 0:
+                        element.date = 'Dimanche';
+                        break;
+                    case 1:
+                        element.date = 'Lundi';
+                        break;
+                    case 2:
+                        element.date = 'Mardi';
+                        break;
+                    case 3:
+                        element.date = 'Mercredi';
+                        break;
+                    case 4:
+                        element.date = 'Jeudi';
+                        break;
+                    case 5:
+                        element.date = 'Vendredi';
+                        break;
+                    case 6:
+                        element.date = 'Samedi';
+                        break;
+                    default:
+                        element.date = 'Inconnu';
+                }
             });
-          });
+        });
         return res;
     }
 
     render()  {
         return (
 
-            <div>
-                <AppBarCustom></AppBarCustom>
-                {
-                    (this.state?.station != null) ? 
-                    <h1>{this.state.station.address}      
-                    <IconButton color="primary" size="large" onClick={this.navigateToGoogleMap}>
-                        <Directions/>
-                    </IconButton></h1>
-                    : <CircularProgress style={{ height: '70px', width: '70px' }}/>
-                }
-                {
-                    (this.state.station != null) ? 
-                    <Card className="infoCard">
-                    <CardContent>
-                    <Table size="small">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Carburant</TableCell>
-                                <TableCell>Prix / L</TableCell>
-                                <TableCell>Mise à jour</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {this.state.station.prices.map((row)=>{
-                                return(
-                                <TableRow key={row.gas_id}>
-                                    <TableCell>{row.gas_name}</TableCell>
-                                    <TableCell>{row.price}</TableCell>
-                                    <TableCell>{this.dateToString(row.last_update)}</TableCell>
-                                </TableRow>
-                                )
-                            })}
-                        </TableBody>
-                    </Table>
-                    </CardContent>
-                    </Card>
-                    : <CircularProgress style={{ height: '70px', width: '70px' }}/>
-                }
-                <Map height={"300px"} centerOn={this.state.station} enableStationPopup={false}></Map>
-                {(!this.state.noData && !this.state.loading) ? 
-                <Card className="infoCard">
-                    <LineGraph gasData={this.state.data}></LineGraph>
-                </Card> : ""}
-                {(this.state.loading)?
-                    <CircularProgress style={{ height: '70px', width: '70px' }}/>
-                    : ""
-                }
-                {(this.state.noData) ?  
-                <Alert severity="info"> There is no history for this station for the last week.</Alert> : ""
-                }
-            </div>
+            <Box sx={{
+                bgcolor: 'background.default',
+                color: 'text.primary',
+                height: '100%',
+                overflow: 'hidden'
+            }}>
+                <AppBarCustom/>
+                <Container>
+                    {
+                        (this.state?.station != null) ?
+                            <h1>{this.state.station.address}
+                                <IconButton color="primary" size="large" sx={{color: 'text.secondary'}} onClick={this.navigateToGoogleMap}>
+                                    <Directions/>
+                                </IconButton></h1>
+                            : <CircularProgress style={{ height: '70px', width: '70px' }}/>
+                    }
+                    {
+                        (this.state.station != null) ?
+                            <Card className="infoCard">
+                                <CardContent>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Fuel</TableCell>
+                                                <TableCell>Price / L</TableCell>
+                                                <TableCell>Updated at</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {this.state.station.prices.map((row)=>{
+                                                return(
+                                                    <TableRow key={row.gas_id}>
+                                                        <TableCell>{row.gas_name}</TableCell>
+                                                        <TableCell>{row.price}</TableCell>
+                                                        <TableCell>{this.dateToString(row.last_update)}</TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                            : <CircularProgress style={{ height: '70px', width: '70px' }}/>
+                    }
+                    <Map height={"30vh"} centerOn={this.state.station} enableStationPopup={false}/>
+                    {(!this.state.noData && !this.state.loading) ?
+                        <Card className="infoCard">
+                            <LineGraph gasData={this.state.data}/>
+                        </Card> : ""}
+                    {(this.state.loading)?
+                        <CircularProgress style={{ height: '70px', width: '70px' }}/>
+                        : ""
+                    }
+                    {(this.state.noData) ?
+                        <Alert severity="info"> There is no history for this station for the last week.</Alert> : ""
+                    }
+                </Container>
+            </Box>
         );
     }
 

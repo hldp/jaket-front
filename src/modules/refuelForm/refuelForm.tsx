@@ -49,7 +49,8 @@ class RefuelForm extends React.Component<{
                 this.props.onClose();
                 window.location.reload();
             }
-        })}
+        });
+    }
 
     public onQuantityChange(e:any){
         this.quantity= e.target.value;

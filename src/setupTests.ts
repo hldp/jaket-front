@@ -3,10 +3,11 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
-var createElementNSOrig = global.document.createElementNS
+
+const createElementNSOrig = global.document.createElementNS;
 global.document.createElementNS = function(namespaceURI: string, qualifiedName: string) {
   if (namespaceURI==='http://www.w3.org/2000/svg' && qualifiedName==='svg'){
-    var element: any = createElementNSOrig.apply(this,arguments as any)
+    const element: any = createElementNSOrig.apply(this, arguments as any);
     element.createSVGRect = function(){}; 
     return element;
   }

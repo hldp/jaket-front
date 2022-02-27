@@ -5,12 +5,14 @@ import {Subscription} from "rxjs";
 import {refuelAPI} from "../../modules/services/refuelAPI.service";
 import {PeriodEnum} from "../../models/period.enum";
 import {GasRefuelStatsModel} from "../../models/gasRefuelStats.model";
-import {Card, Table, TableBody, TableCell, TableRow} from "@mui/material";
+import {Card, Box, Container, Table, TableBody, TableCell, TableRow} from "@mui/material";
 import LineGraph from "../../modules/lineGraph/LineGraph";
 import {GasDataPrice} from "../../models/gasDataPrice.model";
 import {GasType} from "../../models/gasType.enum";
+import {useNavigate} from "react-router-dom";
+import {connect} from "react-redux";
 
-class GasRefuelStats extends React.Component<{},{gasRefuelStats: GasRefuelStatsModel[], selectedGas: string, gasList: string[], gasData: GasDataPrice[]}> {
+class GasRefuelStats extends React.Component<{userLogged: any, navigate: any},{gasRefuelStats: GasRefuelStatsModel[], selectedGas: string, gasList: string[], gasData: GasDataPrice[]}> {
 
     private refuel_stats_request: Subscription | undefined;
     private refuelApi: refuelAPI = new refuelAPI();
@@ -29,6 +31,12 @@ class GasRefuelStats extends React.Component<{},{gasRefuelStats: GasRefuelStatsM
         this.getNumberRefuel = this.getNumberRefuel.bind(this);
         this.loadGasData = this.loadGasData.bind(this);
         this.getGasRefuelByGasName = this.getGasRefuelByGasName.bind(this);
+    }
+
+    componentDidUpdate() {
+        if (!this.props.userLogged.isLogged) {
+            this.props.navigate('/');
+        }
     }
 
     componentWillUnmount() {
@@ -130,38 +138,57 @@ class GasRefuelStats extends React.Component<{},{gasRefuelStats: GasRefuelStatsM
         });
 
         return (
-            <div>
-                <AppBarCustom></AppBarCustom>
-                <h1>Gas refuel statistics</h1>
-                <Table size="small">
-                    <TableBody>
-                        <TableRow>
-                            <TableCell>Number of refuel</TableCell>
-                            <TableCell>{this.getNumberRefuel()}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Liter average price</TableCell>
-                            <TableCell>{this.getLiterPriceAverage().toFixed(2)}€</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>Gas</TableCell>
-                            <TableCell>
-                                <select value={this.state.selectedGas} onChange={this.changeSelectedGas}>
-                                    {options}
-                                </select>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-                {(this.state.gasData.length > 0) ?
-                    <Card className="infoCard">
-                        <LineGraph gasData={this.state.gasData}></LineGraph>
-                    </Card>
-                    : ''}
-            </div>
+            <Box  sx={{
+                bgcolor: 'background.default',
+                color: 'text.primary',
+                height: '100%',
+                overflow: 'hidden'
+            }}>
+                <AppBarCustom/>
+                <Container>
+                    <h1>Gas refuel statistics</h1>
+                    <Table size="small" sx={{
+                        bgcolor: 'background.default',
+                    }}>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>Number of refuel</TableCell>
+                                <TableCell>{this.getNumberRefuel()}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Liter average price</TableCell>
+                                <TableCell>{this.getLiterPriceAverage().toFixed(2)}€</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Gas</TableCell>
+                                <TableCell>
+                                    <select value={this.state.selectedGas} onChange={this.changeSelectedGas}>
+                                        {options}
+                                    </select>
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                    {(this.state.gasData.length > 0) ?
+                        <Card className="infoCard">
+                            <LineGraph gasData={this.state.gasData}/>
+                        </Card>
+                        : ''}
+                </Container>
+            </Box >
         );
     }
-
 }
 
-export default GasRefuelStats;
+const userLoggedToProps = (state: any) => {
+    return {
+        userLogged: state.userLogged
+    }
+}
+
+function WithHooks(props: any) {
+    let navigate = useNavigate();
+    return <GasRefuelStats {...props} navigate={navigate} />
+}
+
+export default connect(userLoggedToProps)(WithHooks);

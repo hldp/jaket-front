@@ -9,7 +9,7 @@ import List from '../../modules/list/List';
 import { connect } from 'react-redux';
 
 class SearchView extends React.Component<{stationFilter:any, dispatch:any},{
-  citySelected: Adress, 
+  citySelected: Adress,
   displayedElement: string}> {
 
   constructor(props: any) {
@@ -38,23 +38,34 @@ class SearchView extends React.Component<{stationFilter:any, dispatch:any},{
 
   render() {
     return (
-
-      <Box component={Grid} container spacing={2}>
+      <Box component={Grid} container sx={{
+        bgcolor: 'background.default',
+        height: '100%',
+        overflow: 'hidden'
+      }}>
         <Box component={Grid} item xs={12}>
           <AppBarCustom/>
         </Box>
-        <Box component={Grid} item xs={12} sx={{ paddingBottom: 2 }} className='search-box'>
-          <Search isOnFirstPage={false} />
+        <Box component={Grid} item xs={12} className='search-box' sx={{
+            bgcolor: 'action.hover',
+            color: 'text.primary',
+            pb: '1vh'
+        }}>
+            <Box component={Grid} item xs={12} sx={{
+                pt: '2vh'
+            }}>
+                <Search isOnFirstPage={false} />
+            </Box>
         </Box>
-        <Box component={Grid} item xs={12} className='map-list-container'>
+        <Box component={Grid} item xs={12} className='map-list-container' height='100%' >
           <ButtonGroup variant="contained" className='button-group' aria-label="outlined primary button group">
             <Button onClick={this.buttonGroupMapClick}>Map</Button>
             <Button onClick={this.buttonGroupListClick}>List</Button>
           </ButtonGroup>
           {
             (this.state.displayedElement === 'map')?
-            <Map height='600px' enableStationPopup={true}/>:
-            <List/>
+            <Map height='60vh' enableStationPopup={true} />:
+            <List />
           }
         </Box>
       </Box>

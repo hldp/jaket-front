@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import {createSlice} from '@reduxjs/toolkit'
 
 export const stationFilterSlice = createSlice({
   name: 'stationFilter',
@@ -14,8 +14,7 @@ export const stationFilterSlice = createSlice({
     },
 
     updateSelectedGas: (state, action)=>{
-      const copy = JSON.parse(JSON.stringify(action.payload));
-      state.selectedGas = copy;
+      state.selectedGas = JSON.parse(JSON.stringify(action.payload));
     },
 
     updateRadius: (state, action)=>{

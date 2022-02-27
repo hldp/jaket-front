@@ -259,7 +259,10 @@ class List extends React.Component<{
             <div className='list-container' data-testid="list-container">
                 <Paper sx={{ width: '100%', mb: 2 }}>
                 <TableContainer>
-                    <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size={'medium'}>
+                    <Table aria-labelledby="tableTitle" size={'medium'} sx={{
+                        minWidth: 750,
+                        bgcolor: 'action.hover',
+                    }}>
                     <EnhancedTableHead
                         order={this.state.order}
                         orderBy={this.state.orderBy}
@@ -274,9 +277,7 @@ class List extends React.Component<{
         
                             return (
                             <TableRow hover role="checkbox" tabIndex={-1} key={index} onClick={() => this.onStationClick(row.id)} style={{ cursor: 'pointer' }}>
-                                <TableCell component="th" id={labelId} scope="row" padding="none">
-                                    {row.address}
-                                </TableCell>
+                                <TableCell align="left" id={labelId}>{row.address}</TableCell>
                                 <TableCell align="right">{row.Gazole}</TableCell>
                                 <TableCell align="right">{row.SP95}</TableCell>
                                 <TableCell align="right">{row.E85}</TableCell>
