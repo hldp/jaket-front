@@ -141,10 +141,10 @@ class GasRefuelStats extends React.Component<{userLogged: any, navigate: any},{g
             <Box  sx={{
                 bgcolor: 'background.default',
                 color: 'text.primary',
-                height: '100%',
+                'min-height': '100%',
             }}>
                 <AppBarCustom/>
-                <Container>
+                <Container sx={{pb: '3vh'}}>
                     <h1>Gas refuel statistics</h1>
                     <Table size="small" sx={{
                         bgcolor: 'background.default',

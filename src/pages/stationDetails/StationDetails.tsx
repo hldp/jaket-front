@@ -142,14 +142,13 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
 
     render()  {
         return (
-
             <Box sx={{
                 bgcolor: 'background.default',
                 color: 'text.primary',
-                pb: '3vh'
+                'min-height': '100%'
             }}>
                 <AppBarCustom/>
-                <Container>
+                <Container sx={{pb: '3vh'}}>
                     {
                         (this.state?.station != null) ?
                             <h1>{this.state.station.address}
