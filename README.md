@@ -11,6 +11,11 @@ Run the following commands to install the project :
 
 Copy `.env.example` to `.env` and edit your local environment variables.
 
+## Creadentials
+
+Username : jaket\
+Password : 1234
+
 ## Available Scripts
 
 In the project directory, you can run:
