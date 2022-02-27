@@ -4,7 +4,6 @@ import SearchView from './pages/searchView/SearchView';
 import {createTheme, ThemeOptions} from '@mui/material/styles';
 import { ThemeProvider } from '@mui/system';
 import StationDetails from './pages/stationDetails/StationDetails';
-import stations from './mock-data/stations';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomeView from './pages/homeView/homeView';
 import GasRefuelStats from "./pages/gasRefuelStats/GasRefuelStats";
@@ -63,7 +62,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<HomeView/>} />
                             <Route path="/search" element={<SearchView/>} />
-                            <Route path="/stationDetails/:id" element={<StationDetails station={stations[0]}/>}/>
+                            <Route path="/stationDetails/:id" element={<StationDetails/>}/>
                             <Route path="/gasRefuelStats" element={<GasRefuelStats/>}/>
                         </Routes>
                     </div>

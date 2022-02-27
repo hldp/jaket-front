@@ -1,18 +1,6 @@
-import { render, screen } from '@testing-library/react';
-import Map from './Map';
 import MapService from './Map.service';
 import { Station } from '../../models/station.model';
 import L from "leaflet";
-
-describe('map component', () => {
-
-    test('renders map', () => {
-        render(<Map height={'600px'}/>);
-        const mapContainer = screen.getByTestId('map-container');
-        expect(mapContainer).toBeInTheDocument();
-    });
-
-});
 
 describe('map service', () => {
 
@@ -46,10 +34,6 @@ describe('map service', () => {
                     closing: new Date(Date.parse('01 Jan 1970 18:00:00 GMT'))
             }]
         }
-        let popupHtml = '<div class="infobulle" style="height:320px;"><p style="text-align: center; font-weight: bold; font-size: 18px;">'+mockStation.name+'</p>';
-        popupHtml += '<p class="marker-popup-item address-icon">'+mockStation.address+'</p>'
-        popupHtml += '<p><span class="opened-text">Open</span> • Closing at 08:00 pm</p>';
-        popupHtml += '<p><span class="gas-name">Gazole</span> : 1.999 €</p><p><span class="gas-name">SP95</span> : 1.999 €</p></div>';
 
         let marker = mapService.getStationMarker(mockStation);
         expect(marker.id).toBe(mockStation.id);
@@ -60,7 +44,7 @@ describe('map service', () => {
         expect(marker.icon.options.html).toBe('<i class="marker-circle company-step-1"></i><i class="marker-icon"></i>');
         expect(marker.icon.options.className).toBe('marker');
         expect(marker.popup).toBeDefined();
-        expect(marker.popup?.content).toBe(popupHtml);
+        expect(marker.popup?.content).toBe("");
         expect(marker.popup?.autoPan).toBe(true);
         expect(marker.popup?.minWidth).toBe(320);
         expect(marker.popup?.maxWidth).toBe(320);
