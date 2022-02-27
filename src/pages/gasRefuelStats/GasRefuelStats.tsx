@@ -142,7 +142,6 @@ class GasRefuelStats extends React.Component<{userLogged: any, navigate: any},{g
                 bgcolor: 'background.default',
                 color: 'text.primary',
                 height: '100%',
-                overflow: 'hidden'
             }}>
                 <AppBarCustom/>
                 <Container>

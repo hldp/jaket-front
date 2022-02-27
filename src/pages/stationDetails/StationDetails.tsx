@@ -146,8 +146,7 @@ class StationDetails extends React.Component<{params: any},{station: Station | n
             <Box sx={{
                 bgcolor: 'background.default',
                 color: 'text.primary',
-                height: '100%',
-                overflow: 'hidden'
+                pb: '3vh'
             }}>
                 <AppBarCustom/>
                 <Container>
