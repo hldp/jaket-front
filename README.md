@@ -35,3 +35,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 ### `npm test`
 
 Launches the test runner.
+
+## Architecture
+
+![Capture d’écran 2022-02-27 à 18 48 49](https://user-images.githubusercontent.com/26509409/155893683-00e4e7ec-c721-4c13-9fea-5521341388ae.png)
